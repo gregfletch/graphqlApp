@@ -1,0 +1,83 @@
+<div class="container">
+  <div class="row justify-content-md-center">
+    <mat-card class="mt-5 mb-3 col-md-8">
+      <mat-card-header>
+        <mat-card-title>GraphQL Sample App</mat-card-title>
+        <mat-card-subtitle>Register</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <form [formGroup]="form" (ngSubmit)="register()">
+          <mat-form-field appearance="outline" class="col-12">
+            <mat-label><mat-icon>person</mat-icon>First Name</mat-label>
+            <input
+              matInput
+              formControlName="firstName"
+              [ngClass]="{ 'is-invalid': (submitted || firstNameTouched) && form.controls.firstName.errors }"
+              (blur)="firstNameTouched = true"
+            >
+            <div *ngIf="(submitted || firstNameTouched) && form.controls.firstName.errors" class="invalid-feedback">
+              <div *ngIf="form.controls.firstName.errors.required">First name is required</div>
+            </div>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="col-12">
+            <mat-label><mat-icon>person</mat-icon>Last Name</mat-label>
+            <input
+              matInput
+              formControlName="lastName"
+              [ngClass]="{ 'is-invalid': (submitted || lastNameTouched) && form.controls.lastName.errors }"
+              (blur)="lastNameTouched = true"
+            >
+            <div *ngIf="(submitted || lastNameTouched) && form.controls.lastName.errors" class="invalid-feedback">
+              <div *ngIf="form.controls.lastName.errors.required">Last name is required</div>
+            </div>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="col-12">
+            <mat-label><mat-icon>person</mat-icon>Username</mat-label>
+            <input
+              matInput
+              formControlName="username"
+              [ngClass]="{ 'is-invalid': (submitted || usernameTouched) && form.controls.username.errors }"
+              (blur)="usernameTouched = true"
+            >
+            <div *ngIf="(submitted || usernameTouched) && form.controls.username.errors" class="invalid-feedback">
+              <div *ngIf="form.controls.username.errors.required">Username is required</div>
+            </div>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="col-12">
+            <mat-label><mat-icon>lock</mat-icon>Password</mat-label>
+            <input
+              matInput
+              type="password"
+              formControlName="password"
+              [ngClass]="{ 'is-invalid': (submitted || passwordTouched) && form.controls.password.errors }"
+              (blur)="passwordTouched = true"
+            >
+            <div *ngIf="(submitted || passwordTouched) && form.controls.password.errors" class="invalid-feedback">
+              <div *ngIf="form.controls.password.errors.required">Password is required</div>
+            </div>
+          </mat-form-field>
+
+          <button
+            mat-raised-button
+            color="primary"
+            class="mr-3 float-right col-md-2 col-6"
+            [disabled]="loading"
+          >
+            Register <mat-icon *ngIf="loading"><mat-spinner diameter="20"></mat-spinner></mat-icon>
+          </button>
+
+          <a
+            mat-button
+            class="mr-3 float-right col-md-2 col-6"
+            color="accent"
+            routerLinkActive="mat-flat-button"
+            [routerLink]="''"
+          >Cancel</a>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
