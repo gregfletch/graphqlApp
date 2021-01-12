@@ -1,3 +1,5 @@
+![Angular](https://github.com/gregfletch/graphqlApp/workflows/Angular/badge.svg)
+
 # GraphqlApp
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.0.5.
