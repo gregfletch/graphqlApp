@@ -13,7 +13,7 @@ import { environment } from 'src/environments/environment';
 export class AuthService {
   private authTokenSubject: BehaviorSubject<AuthToken | null>;
   public authToken: Observable<AuthToken | null>;
-  private readonly AUTH_TOKEN_LOCAL_STORAGE_KEY = 'authToken';
+  public readonly AUTH_TOKEN_LOCAL_STORAGE_KEY = 'authToken';
 
   constructor(private httpClient: HttpClient) {
     const authToken = localStorage.getItem(this.AUTH_TOKEN_LOCAL_STORAGE_KEY) || null;
@@ -39,18 +39,22 @@ export class AuthService {
       password: password
     };
     const url: string = environment.idp_base_url + '/oauth/token';
-    const headers: HttpHeaders = new HttpHeaders({'Content-Type': 'application/x-www-form-urlencoded', 'Accept': 'application/json'});
+    const headers: HttpHeaders = new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8', Accept: 'application/json' });
     const httpParams: HttpParams = new HttpParams({ fromObject: params });
 
-    return this.httpClient.post<AuthToken>(url, httpParams, { headers: headers }).pipe(map((token: AuthToken) => {
-      localStorage.setItem(this.AUTH_TOKEN_LOCAL_STORAGE_KEY, btoa(JSON.stringify(token)));
-      this.authTokenSubject.next(token);
+    return this.httpClient
+      .post<AuthToken>(url, httpParams, { headers: headers })
+      .pipe(
+        map((token: AuthToken) => {
+          localStorage.setItem(this.AUTH_TOKEN_LOCAL_STORAGE_KEY, btoa(JSON.stringify(token)));
+          this.authTokenSubject.next(token);
 
-      return token;
-    }));
+          return token;
+        })
+      );
   }
 
-  private isTokenExpired(): boolean {
+  isTokenExpired(): boolean {
     const authToken: AuthToken | null = this.authTokenValue;
     if (!authToken) {
       return true;

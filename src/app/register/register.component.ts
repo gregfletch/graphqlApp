@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { RestResponse } from 'src/app/models/rest-response';
@@ -20,7 +20,6 @@ export class RegisterComponent implements OnDestroy, OnInit {
   firstNameTouched = false;
   lastNameTouched = false;
   form!: FormGroup;
-  returnUrl!: string;
 
   private destroyed$: Subject<void> = new Subject();
 
@@ -54,12 +53,10 @@ export class RegisterComponent implements OnDestroy, OnInit {
       .pipe(takeUntil(this.destroyed$))
       .subscribe(
         (data: RestResponse) => {
-          // this.router.navigate([this.returnUrl]);
           console.log('DATA = ', data);
           this.router.navigate(['']);
         },
         (error: HttpErrorResponse) => {
-          // this.alertService.error(error);
           this.loading = false;
           console.log('ERROR = ', error);
         }

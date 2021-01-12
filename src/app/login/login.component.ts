@@ -1,13 +1,11 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AuthToken } from 'src/app/models/auth-token';
-import { RestResponse } from 'src/app/models/rest-response';
 import { AuthService } from 'src/app/services/auth.service';
-import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-login',
@@ -24,7 +22,7 @@ export class LoginComponent implements OnDestroy, OnInit {
 
   private destroyed$: Subject<void> = new Subject();
 
-  constructor(private authService: AuthService, private formBuilder: FormBuilder, private route: ActivatedRoute, private userService: UserService) {}
+  constructor(private authService: AuthService, private formBuilder: FormBuilder, private route: ActivatedRoute, private router: Router) {}
 
   ngOnInit(): void {
     this.form = this.formBuilder.group({
@@ -55,8 +53,8 @@ export class LoginComponent implements OnDestroy, OnInit {
       .pipe(takeUntil(this.destroyed$))
       .subscribe(
         (tokenResponse: AuthToken) => {
-          // this.router.navigate([this.returnUrl]);
           console.log('TOKEN RESPONSE = ', tokenResponse);
+          this.router.navigate([this.returnUrl]);
         },
         (error: HttpErrorResponse) => {
           // this.alertService.error(error);

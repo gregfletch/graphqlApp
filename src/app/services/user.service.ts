@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { AuthorizationCodeParams } from 'src/app/models/authorization-code-params';
 import { RegisterParams } from 'src/app/models/register-params';
 import { RestResponse } from 'src/app/models/rest-response';
 import { environment } from 'src/environments/environment';
@@ -22,6 +21,6 @@ export class UserService {
       }
     };
     const url: string = environment.idp_base_url + '/users';
-    return this.httpClient.post(url, registerParams)
+    return this.httpClient.post(url, registerParams);
   }
 }
