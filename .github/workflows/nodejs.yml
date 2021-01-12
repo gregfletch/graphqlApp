@@ -1,0 +1,51 @@
+name: Angular
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  linters:
+    name: Static Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Yarn Install
+        run: yarn install
+      - name: Stylelint
+        run: npm run stylelint
+      - name: Lint
+        run: npm run lint
+      - name: Audit
+        run: yarn audit
+
+  test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Yarn Install
+        run: yarn install
+
+      - name: Build
+        run: npm run build
+
+      - name: Run tests
+        run: npm run test
