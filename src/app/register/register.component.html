@@ -12,11 +12,15 @@
             <input
               matInput
               formControlName="firstName"
+              minlength="2"
+              maxlength="128"
               [ngClass]="{ 'is-invalid': (submitted || firstNameTouched) && form.controls.firstName.errors }"
               (blur)="firstNameTouched = true"
             >
             <div *ngIf="(submitted || firstNameTouched) && form.controls.firstName.errors" class="invalid-feedback">
               <div *ngIf="form.controls.firstName.errors.required">First name is required</div>
+              <div *ngIf="form.controls.firstName.errors.minlength">First name must be at least 2 characters</div>
+              <div *ngIf="form.controls.firstName.errors.maxlength">First name must be at most 128 characters</div>
             </div>
           </mat-form-field>
 
@@ -25,24 +29,35 @@
             <input
               matInput
               formControlName="lastName"
+              minlength="2"
+              maxlength="128"
               [ngClass]="{ 'is-invalid': (submitted || lastNameTouched) && form.controls.lastName.errors }"
               (blur)="lastNameTouched = true"
             >
             <div *ngIf="(submitted || lastNameTouched) && form.controls.lastName.errors" class="invalid-feedback">
               <div *ngIf="form.controls.lastName.errors.required">Last name is required</div>
+              <div *ngIf="form.controls.lastName.errors.minlength">Last name must be at least 2 characters</div>
+              <div *ngIf="form.controls.lastName.errors.maxlength">Last name must be at most 128 characters</div>
             </div>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="col-12">
-            <mat-label><mat-icon>person</mat-icon>Username</mat-label>
+            <mat-label><mat-icon>person</mat-icon>Email</mat-label>
             <input
               matInput
               formControlName="username"
+              minlength="8"
+              maxlength="255"
+              type="email"
+              email
               [ngClass]="{ 'is-invalid': (submitted || usernameTouched) && form.controls.username.errors }"
               (blur)="usernameTouched = true"
             >
             <div *ngIf="(submitted || usernameTouched) && form.controls.username.errors" class="invalid-feedback">
-              <div *ngIf="form.controls.username.errors.required">Username is required</div>
+              <div *ngIf="form.controls.username.errors.required">Email is required</div>
+              <div *ngIf="form.controls.username.errors.minlength">Email must be at least 8 characters</div>
+              <div *ngIf="form.controls.username.errors.maxlength">Email must be most least 255 characters</div>
+              <div *ngIf="form.controls.username.errors.email">Email must be an email address</div>
             </div>
           </mat-form-field>
 
@@ -51,12 +66,16 @@
             <input
               matInput
               type="password"
+              minlength="8"
+              maxlength="128"
               formControlName="password"
               [ngClass]="{ 'is-invalid': (submitted || passwordTouched) && form.controls.password.errors }"
               (blur)="passwordTouched = true"
             >
             <div *ngIf="(submitted || passwordTouched) && form.controls.password.errors" class="invalid-feedback">
               <div *ngIf="form.controls.password.errors.required">Password is required</div>
+              <div *ngIf="form.controls.password.errors.minlength">Password must be at least 8 characters</div>
+              <div *ngIf="form.controls.password.errors.maxlength">Password must be at most 128 characters</div>
             </div>
           </mat-form-field>
 

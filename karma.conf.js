@@ -6,11 +6,12 @@ module.exports = function (config) {
     basePath: '',
     frameworks: ['jasmine', '@angular-devkit/build-angular'],
     plugins: [
-      require('karma-jasmine'),
+      require('@angular-devkit/build-angular/plugins/karma'),
       require('karma-chrome-launcher'),
-      require('karma-jasmine-html-reporter'),
       require('karma-coverage'),
-      require('@angular-devkit/build-angular/plugins/karma')
+      require('karma-jasmine'),
+      require('karma-jasmine-html-reporter'),
+      require('karma-spec-reporter')
     ],
     client: {
       jasmine: {
@@ -29,7 +30,7 @@ module.exports = function (config) {
       subdir: '.',
       reporters: [{ type: 'html' }, { type: 'text-summary' }, { type: 'lcov' }]
     },
-    reporters: ['progress', 'kjhtml', 'coverage'],
+    reporters: ['spec', 'kjhtml', 'coverage'],
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
