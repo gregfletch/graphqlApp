@@ -1,4 +1,4 @@
-![Angular](https://github.com/gregfletch/graphqlApp/workflows/Angular/badge.svg)
+[![codecov](https://codecov.io/gh/gregfletch/graphqlApp/branch/main/graph/badge.svg?token=5BKOR7OJSD)](https://codecov.io/gh/gregfletch/graphqlApp) ![Angular](https://github.com/gregfletch/graphqlApp/workflows/Angular/badge.svg)
 
 # GraphqlApp
 
