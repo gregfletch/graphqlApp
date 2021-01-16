@@ -8,6 +8,7 @@ import { AuthToken } from 'src/app/models/auth-token';
 import * as faker from 'faker';
 
 import { AuthService } from 'src/app/services/auth.service';
+import SpyInstance = jest.SpyInstance;
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -36,7 +37,7 @@ describe('AuthService', () => {
     });
 
     const authToken: AuthToken = authTokenFactory.build();
-    spyOn(localStorage, 'getItem').and.returnValue(btoa(JSON.stringify(authToken)));
+    jest.spyOn(window.localStorage.__proto__, 'getItem').mockReturnValue(btoa(JSON.stringify(authToken)));
 
     const authService: AuthService = TestBed.inject(AuthService);
 
@@ -108,13 +109,13 @@ describe('AuthService', () => {
 
   describe('refreshToken', () => {
     const authToken: AuthToken = authTokenFactory.build();
-    let authTokenValueSpy: jasmine.Spy;
+    let authTokenValueSpy: jest.SpyInstance<AuthToken | null>;
 
     beforeEach(() => {
       httpTestingController = TestBed.inject(HttpTestingController);
 
       spyOn(localStorage, 'setItem');
-      authTokenValueSpy = spyOnProperty(service, 'authTokenValue', 'get').and.returnValue(authTokenFactory.build());
+      authTokenValueSpy = jest.spyOn(service, 'authTokenValue', 'get').mockReturnValue(authTokenFactory.build());
     });
 
     afterEach(() => {
@@ -170,13 +171,13 @@ describe('AuthService', () => {
     });
 
     it('returns EMPTY observable if no auth token present', () => {
-      authTokenValueSpy.and.returnValue(null);
+      authTokenValueSpy.mockReturnValue(null);
 
       expect(service.refreshToken()).toEqual(EMPTY);
     });
 
     it('returns EMPTY observable if auth token does not contain a refresh token', () => {
-      authTokenValueSpy.and.returnValue(
+      authTokenValueSpy.mockReturnValue(
         authTokenFactory.build({
           refresh_token: ''
         })
@@ -189,41 +190,41 @@ describe('AuthService', () => {
   describe('isAuthenticated', () => {
     it('returns true if auth token value is not null', () => {
       const authToken: AuthToken = authTokenFactory.build();
-      spyOnProperty(service, 'authTokenValue', 'get').and.returnValue(authToken);
+      jest.spyOn(service, 'authTokenValue', 'get').mockReturnValue(authToken);
 
-      expect(service.isAuthenticated()).toBeTrue();
+      expect(service.isAuthenticated()).toBeTruthy();
     });
 
     it('returns false if auth token value is not present', () => {
-      const authTokenValueSpy: jasmine.Spy = spyOnProperty(service, 'authTokenValue', 'get');
+      const authTokenValueSpy: SpyInstance = jest.spyOn(service, 'authTokenValue', 'get');
 
       [null, undefined].forEach((value: null | undefined) => {
-        authTokenValueSpy.and.returnValue(value);
+        authTokenValueSpy.mockReturnValue(value);
 
-        expect(service.isAuthenticated()).toBeFalse();
+        expect(service.isAuthenticated()).toBeFalsy();
       });
     });
   });
 
   describe('isTokenExpired', () => {
     it('returns true if auth token is null', () => {
-      spyOnProperty(service, 'authTokenValue', 'get').and.returnValue(null);
-      expect(service.isTokenExpired()).toBeTrue();
+      jest.spyOn(service, 'authTokenValue', 'get').mockReturnValue(null);
+      expect(service.isTokenExpired()).toBeTruthy();
     });
 
     it('returns true if auth token is expired', () => {
       const created_at: number = new Date().getTime() / 1000 - (60 * 60 + 1);
       const authToken: AuthToken = authTokenFactory.build({ created_at: created_at });
-      spyOnProperty(service, 'authTokenValue', 'get').and.returnValue(authToken);
+      jest.spyOn(service, 'authTokenValue', 'get').mockReturnValue(authToken);
 
-      expect(service.isTokenExpired()).toBeTrue();
+      expect(service.isTokenExpired()).toBeTruthy();
     });
 
     it('returns false if auth token is not expired', () => {
       const authToken: AuthToken = authTokenFactory.build();
-      spyOnProperty(service, 'authTokenValue', 'get').and.returnValue(authToken);
+      jest.spyOn(service, 'authTokenValue', 'get').mockReturnValue(authToken);
 
-      expect(service.isTokenExpired()).toBeFalse();
+      expect(service.isTokenExpired()).toBeFalsy();
     });
   });
 });
