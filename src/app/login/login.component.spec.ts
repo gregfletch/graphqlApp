@@ -10,7 +10,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import * as faker from 'faker';
-import { of, throwError } from 'rxjs';
+import { EMPTY, of, throwError } from 'rxjs';
 import { authTokenFactory } from 'src/app/factories/auth-token';
 import { LoginComponent } from 'src/app/login/login.component';
 import { AuthToken } from 'src/app/models/auth-token';
@@ -58,6 +58,68 @@ describe('LoginComponent', () => {
     component.ngOnInit();
 
     expect(component.returnUrl).toEqual('/dashboard');
+  });
+
+  describe('ngOnInit', () => {
+    let authService: AuthService;
+    let router: Router;
+
+    beforeEach(() => {
+      authService = TestBed.inject(AuthService);
+      router = TestBed.inject(Router);
+    });
+
+    it('calls refresh token if the user is authenticated and their token is expired', () => {
+      spyOn(authService, 'isAuthenticated').and.returnValue(true);
+      spyOn(authService, 'isTokenExpired').and.returnValue(true);
+      spyOn(authService, 'refreshToken').and.returnValue(EMPTY);
+
+      component.ngOnInit();
+
+      expect(authService.refreshToken).toHaveBeenCalled();
+    });
+
+    it('navigates to the redirect URL after successfully refreshing auth token', () => {
+      spyOn(authService, 'isAuthenticated').and.returnValue(true);
+      spyOn(authService, 'isTokenExpired').and.returnValue(true);
+      spyOn(authService, 'refreshToken').and.returnValue(of<AuthToken>(authTokenFactory.build()));
+      spyOn(router, 'navigate');
+
+      component.ngOnInit();
+
+      expect(router.navigate).toHaveBeenCalledWith([component.returnUrl]);
+    });
+
+    it('does not navigate if auth token refresh fails', () => {
+      spyOn(authService, 'isAuthenticated').and.returnValue(true);
+      spyOn(authService, 'isTokenExpired').and.returnValue(true);
+      spyOn(authService, 'refreshToken').and.returnValue(throwError(new HttpErrorResponse({ status: 400 })));
+      spyOn(router, 'navigate');
+
+      component.ngOnInit();
+
+      expect(router.navigate).not.toHaveBeenCalled();
+    });
+
+    it('does not call refresh token if the user is not authenticated', () => {
+      spyOn(authService, 'isAuthenticated').and.returnValue(false);
+      spyOn(authService, 'isTokenExpired').and.returnValue(true);
+      spyOn(authService, 'refreshToken');
+
+      component.ngOnInit();
+
+      expect(authService.refreshToken).not.toHaveBeenCalled();
+    });
+
+    it('does not call refresh token if the user is authenticated and their token is not expired', () => {
+      spyOn(authService, 'isAuthenticated').and.returnValue(true);
+      spyOn(authService, 'isTokenExpired').and.returnValue(false);
+      spyOn(authService, 'refreshToken');
+
+      component.ngOnInit();
+
+      expect(authService.refreshToken).not.toHaveBeenCalled();
+    });
   });
 
   describe('form validation', () => {

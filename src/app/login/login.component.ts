@@ -32,6 +32,18 @@ export class LoginComponent implements OnDestroy, OnInit {
 
     // get return url from route parameters or default to '/'
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+
+    if (this.authService.isAuthenticated() && this.authService.isTokenExpired()) {
+      this.authService.refreshToken().pipe(takeUntil(this.destroyed$))
+        .subscribe(
+          (_tokenResponse: AuthToken) => {
+            this.router.navigate([this.returnUrl]);
+          },
+          (error: HttpErrorResponse) => {
+            console.log('ERROR = ', error);
+          }
+        );
+    }
   }
 
   ngOnDestroy(): void {
