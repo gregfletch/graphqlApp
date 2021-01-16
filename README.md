@@ -1,4 +1,4 @@
-[![codecov](https://codecov.io/gh/gregfletch/graphqlApp/branch/main/graph/badge.svg?token=5BKOR7OJSD)](https://codecov.io/gh/gregfletch/graphqlApp) ![Angular](https://github.com/gregfletch/graphqlApp/workflows/Angular/badge.svg) ![CodeQL](https://github.com/gregfletch/graphqlApp/workflows/CodeQL/badge.svg)
+[![codecov](https://codecov.io/gh/gregfletch/graphqlApp/branch/main/graph/badge.svg?token=5BKOR7OJSD)](https://codecov.io/gh/gregfletch/graphqlApp) ![Angular](https://github.com/gregfletch/graphqlApp/workflows/Angular/badge.svg) ![CodeQL](https://github.com/gregfletch/graphqlApp/workflows/CodeQL/badge.svg) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 
 # GraphqlApp
 

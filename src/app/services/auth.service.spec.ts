@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { EMPTY } from 'rxjs';
 import { authTokenFactory } from 'src/app/factories/auth-token';
 import { AuthToken } from 'src/app/models/auth-token';
 
@@ -102,6 +103,105 @@ describe('AuthService', () => {
       expect(req.request.method).toEqual('POST');
 
       req.error(new ErrorEvent('HttpErrorResponse'), { status: 400 });
+    });
+  });
+
+  describe('refreshToken', () => {
+    const authToken: AuthToken = authTokenFactory.build();
+    let authTokenValueSpy: jasmine.Spy;
+
+    beforeEach(() => {
+      httpTestingController = TestBed.inject(HttpTestingController);
+
+      spyOn(localStorage, 'setItem');
+      authTokenValueSpy = spyOnProperty(service, 'authTokenValue', 'get').and.returnValue(authTokenFactory.build());
+    });
+
+    afterEach(() => {
+      // After every test, assert that there are no more pending requests.
+      httpTestingController.verify();
+    });
+
+    it('returns auth token on success', () => {
+      service.refreshToken().subscribe((response: AuthToken) => {
+        // When observable resolves, result should match test data
+        expect(response).toEqual(authToken);
+      });
+
+      // The following `expectOne()` will match the request's URL.
+      // If no requests or multiple requests matched that URL
+      // `expectOne()` would throw.
+      const req = httpTestingController.expectOne('http://idp.app.lvh.me:3000/oauth/token');
+
+      // Assert that the request is a POST.
+      expect(req.request.method).toEqual('POST');
+
+      // Respond with mock data, causing Observable to resolve.
+      // Subscribe callback asserts that correct data was returned.
+      req.flush(authToken);
+    });
+
+    it('stores the auth token in local storage on success', () => {
+      service.refreshToken().subscribe((_response: AuthToken) => {
+        expect(localStorage.setItem).toHaveBeenCalledWith(service.AUTH_TOKEN_LOCAL_STORAGE_KEY, btoa(JSON.stringify(authToken)));
+      });
+
+      const req = httpTestingController.expectOne('http://idp.app.lvh.me:3000/oauth/token');
+      expect(req.request.method).toEqual('POST');
+
+      req.flush(authToken);
+    });
+
+    it('does not write to local storage on error', () => {
+      service.refreshToken().subscribe(
+        (_response: AuthToken) => {
+          fail('Unexpected success');
+        },
+        (error: HttpErrorResponse) => {
+          expect(localStorage.setItem).not.toHaveBeenCalled();
+          expect(error.status).toEqual(400);
+        }
+      );
+
+      const req = httpTestingController.expectOne('http://idp.app.lvh.me:3000/oauth/token');
+      expect(req.request.method).toEqual('POST');
+
+      req.error(new ErrorEvent('HttpErrorResponse'), { status: 400 });
+    });
+
+    it('returns EMPTY observable if no auth token present', () => {
+      authTokenValueSpy.and.returnValue(null);
+
+      expect(service.refreshToken()).toEqual(EMPTY);
+    });
+
+    it('returns EMPTY observable if auth token does not contain a refresh token', () => {
+      authTokenValueSpy.and.returnValue(
+        authTokenFactory.build({
+          refresh_token: ''
+        })
+      );
+
+      expect(service.refreshToken()).toEqual(EMPTY);
+    });
+  });
+
+  describe('isAuthenticated', () => {
+    it('returns true if auth token value is not null', () => {
+      const authToken: AuthToken = authTokenFactory.build();
+      spyOnProperty(service, 'authTokenValue', 'get').and.returnValue(authToken);
+
+      expect(service.isAuthenticated()).toBeTrue();
+    });
+
+    it('returns false if auth token value is not present', () => {
+      const authTokenValueSpy: jasmine.Spy = spyOnProperty(service, 'authTokenValue', 'get');
+
+      [null, undefined].forEach((value: null | undefined) => {
+        authTokenValueSpy.and.returnValue(value);
+
+        expect(service.isAuthenticated()).toBeFalse();
+      });
     });
   });
 
