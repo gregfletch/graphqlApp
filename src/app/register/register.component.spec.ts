@@ -6,6 +6,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -30,6 +31,7 @@ describe('RegisterComponent', () => {
         MatFormFieldModule,
         MatIconModule,
         MatInputModule,
+        MatProgressSpinnerModule,
         NoopAnimationsModule,
         ReactiveFormsModule,
         RouterTestingModule
@@ -50,7 +52,7 @@ describe('RegisterComponent', () => {
 
   describe('form validation', () => {
     it('is invalid by default', () => {
-      expect(component.form.valid).toBeFalse();
+      expect(component.form.valid).toBeFalsy();
     });
 
     it('is valid if all required fields are filled', () => {
@@ -60,7 +62,7 @@ describe('RegisterComponent', () => {
         username: faker.internet.email(),
         password: faker.internet.password()
       });
-      expect(component.form.valid).toBeTrue();
+      expect(component.form.valid).toBeTruthy();
     });
 
     describe('first name', () => {
@@ -249,7 +251,7 @@ describe('RegisterComponent', () => {
       });
 
       component.register();
-      expect(component.loading).toBeFalse();
+      expect(component.loading).toBeFalsy();
     });
   });
 });

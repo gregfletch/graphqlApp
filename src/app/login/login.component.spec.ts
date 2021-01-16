@@ -6,6 +6,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -30,6 +31,7 @@ describe('LoginComponent', () => {
         MatFormFieldModule,
         MatIconModule,
         MatInputModule,
+        MatProgressSpinnerModule,
         NoopAnimationsModule,
         ReactiveFormsModule,
         RouterTestingModule
@@ -124,12 +126,12 @@ describe('LoginComponent', () => {
 
   describe('form validation', () => {
     it('is invalid by default', () => {
-      expect(component.form.valid).toBeFalse();
+      expect(component.form.valid).toBeFalsy();
     });
 
     it('is valid if all required fields are filled', () => {
       component.form.setValue({ username: faker.internet.email(), password: faker.internet.password() });
-      expect(component.form.valid).toBeTrue();
+      expect(component.form.valid).toBeTruthy();
     });
 
     describe('username field', () => {
@@ -242,7 +244,7 @@ describe('LoginComponent', () => {
       component.form.setValue({ username: faker.internet.email(), password: faker.internet.password(8) });
 
       component.login();
-      expect(component.loading).toBeFalse();
+      expect(component.loading).toBeFalsy();
     });
   });
 });

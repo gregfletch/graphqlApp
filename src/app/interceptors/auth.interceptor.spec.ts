@@ -35,27 +35,27 @@ describe('UnauthorizedInterceptor', () => {
       authService.login(faker.internet.email(), faker.internet.password()).subscribe();
 
       const req = httpTestingController.expectOne('http://idp.app.lvh.me:3000/oauth/token');
-      expect(req.request.headers.has('Authorization')).toBeFalse();
+      expect(req.request.headers.has('Authorization')).toBeFalsy();
     });
 
     it('does not set Authorization header if auth token value is null', () => {
       spyOn(authService, 'isAuthenticated').and.returnValue(true);
       spyOn(authService, 'isTokenExpired').and.returnValue(false);
-      spyOnProperty(authService, 'authTokenValue', 'get').and.returnValue(null);
+      jest.spyOn(authService, 'authTokenValue', 'get').mockReturnValue(null);
 
       authService.login(faker.internet.email(), faker.internet.password()).subscribe();
 
       const req = httpTestingController.expectOne('http://idp.app.lvh.me:3000/oauth/token');
-      expect(req.request.headers.has('Authorization')).toBeFalse();
+      expect(req.request.headers.has('Authorization')).toBeFalsy();
     });
 
     it('sets Authorization header if user is authenticated and access token is not expired', () => {
-      spyOnProperty(authService, 'authTokenValue', 'get').and.returnValue(authTokenFactory.build());
+      jest.spyOn(authService, 'authTokenValue', 'get').mockReturnValue(authTokenFactory.build());
 
       authService.login(faker.internet.email(), faker.internet.password()).subscribe();
 
       const req = httpTestingController.expectOne('http://idp.app.lvh.me:3000/oauth/token');
-      expect(req.request.headers.has('Authorization')).toBeTrue();
+      expect(req.request.headers.has('Authorization')).toBeTruthy();
     });
   });
 
