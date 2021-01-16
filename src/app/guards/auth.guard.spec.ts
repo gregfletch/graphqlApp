@@ -36,14 +36,14 @@ describe('AuthGuard', () => {
       spyOn(authService, 'isAuthenticated').and.returnValue(true);
       spyOn(authService, 'isTokenExpired').and.returnValue(false);
 
-      expect(guard.canActivate(new ActivatedRouteSnapshot(), <RouterStateSnapshot>{url: 'testUrl'})).toBeTrue();
+      expect(guard.canActivate(new ActivatedRouteSnapshot(), <RouterStateSnapshot>{ url: 'testUrl' })).toBeTrue();
     });
 
     it('does not call router#navigate if the route can activate', () => {
       spyOn(authService, 'isAuthenticated').and.returnValue(true);
       spyOn(authService, 'isTokenExpired').and.returnValue(false);
 
-      guard.canActivate(new ActivatedRouteSnapshot(), <RouterStateSnapshot>{url: 'testUrl'})
+      guard.canActivate(new ActivatedRouteSnapshot(), <RouterStateSnapshot>{ url: 'testUrl' });
 
       expect(router.navigate).not.toHaveBeenCalled();
     });
@@ -52,28 +52,28 @@ describe('AuthGuard', () => {
       spyOn(authService, 'isAuthenticated').and.returnValue(false);
       spyOn(authService, 'isTokenExpired').and.returnValue(false);
 
-      expect(guard.canActivate(new ActivatedRouteSnapshot(), <RouterStateSnapshot>{url: 'testUrl'})).toBeFalse();
+      expect(guard.canActivate(new ActivatedRouteSnapshot(), <RouterStateSnapshot>{ url: 'testUrl' })).toBeFalse();
     });
 
     it('returns true if the user is authenticated and their auth token is expired', () => {
       spyOn(authService, 'isAuthenticated').and.returnValue(true);
       spyOn(authService, 'isTokenExpired').and.returnValue(true);
 
-      expect(guard.canActivate(new ActivatedRouteSnapshot(), <RouterStateSnapshot>{url: 'testUrl'})).toBeFalse();
+      expect(guard.canActivate(new ActivatedRouteSnapshot(), <RouterStateSnapshot>{ url: 'testUrl' })).toBeFalse();
     });
 
     it('returns true if the user is not authenticated and their auth token is expired', () => {
       spyOn(authService, 'isAuthenticated').and.returnValue(false);
       spyOn(authService, 'isTokenExpired').and.returnValue(true);
 
-      expect(guard.canActivate(new ActivatedRouteSnapshot(), <RouterStateSnapshot>{url: 'testUrl'})).toBeFalse();
+      expect(guard.canActivate(new ActivatedRouteSnapshot(), <RouterStateSnapshot>{ url: 'testUrl' })).toBeFalse();
     });
 
     it('calls router#navigate if the route cannot be activated', () => {
       spyOn(authService, 'isAuthenticated').and.returnValue(false);
       spyOn(authService, 'isTokenExpired').and.returnValue(false);
 
-      guard.canActivate(new ActivatedRouteSnapshot(), <RouterStateSnapshot>{url: 'testUrl'})
+      guard.canActivate(new ActivatedRouteSnapshot(), <RouterStateSnapshot>{ url: 'testUrl' });
 
       expect(router.navigate).toHaveBeenCalledOnceWith(['/login']);
     });

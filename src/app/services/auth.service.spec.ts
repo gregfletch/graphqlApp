@@ -108,7 +108,7 @@ describe('AuthService', () => {
 
   describe('refreshToken', () => {
     const authToken: AuthToken = authTokenFactory.build();
-    let authTokenValueSpy:jasmine.Spy;
+    let authTokenValueSpy: jasmine.Spy;
 
     beforeEach(() => {
       httpTestingController = TestBed.inject(HttpTestingController);
@@ -176,9 +176,11 @@ describe('AuthService', () => {
     });
 
     it('returns EMPTY observable if auth token does not contain a refresh token', () => {
-      authTokenValueSpy.and.returnValue(authTokenFactory.build({
-        refresh_token: ''
-      }));
+      authTokenValueSpy.and.returnValue(
+        authTokenFactory.build({
+          refresh_token: ''
+        })
+      );
 
       expect(service.refreshToken()).toEqual(EMPTY);
     });

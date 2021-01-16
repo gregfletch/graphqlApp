@@ -34,7 +34,9 @@ export class LoginComponent implements OnDestroy, OnInit {
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
 
     if (this.authService.isAuthenticated() && this.authService.isTokenExpired()) {
-      this.authService.refreshToken().pipe(takeUntil(this.destroyed$))
+      this.authService
+        .refreshToken()
+        .pipe(takeUntil(this.destroyed$))
         .subscribe(
           (_tokenResponse: AuthToken) => {
             this.router.navigate([this.returnUrl]);

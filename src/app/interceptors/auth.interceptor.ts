@@ -7,7 +7,6 @@ import { AuthService } from 'src/app/services/auth.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-
   constructor(private authService: AuthService, private router: Router) {}
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
@@ -17,12 +16,11 @@ export class AuthInterceptor implements HttpInterceptor {
 
     return next.handle(request).pipe(
       catchError((response: HttpErrorResponse) => {
-          if (response.status === 401) {
-            this.router.navigate(['/login']);
-          }
-          return throwError(response);
+        if (response.status === 401) {
+          this.router.navigate(['/login']);
         }
-      )
+        return throwError(response);
+      })
     );
   }
 
@@ -30,7 +28,7 @@ export class AuthInterceptor implements HttpInterceptor {
     if (this.authService.authTokenValue?.access_token) {
       return request.clone({
         setHeaders: {
-          'Authorization': `Bearer ${this.authService.authTokenValue.access_token}`
+          Authorization: `Bearer ${this.authService.authTokenValue.access_token}`
         }
       });
     }

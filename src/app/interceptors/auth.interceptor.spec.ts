@@ -70,7 +70,14 @@ describe('UnauthorizedInterceptor', () => {
     it('navigates to login if a 401 response is returned', () => {
       spyOn(authService, 'isAuthenticated').and.returnValue(false);
 
-      const sub = authService.login(faker.internet.email(), faker.internet.password()).subscribe();
+      const sub = authService.login(faker.internet.email(), faker.internet.password()).subscribe(
+        (_response: AuthToken) => {
+          fail('Unexpected success');
+        },
+        (error: HttpErrorResponse) => {
+          expect(error.status).toEqual(401);
+        }
+      );
 
       const req = httpTestingController.expectOne('http://idp.app.lvh.me:3000/oauth/token');
       req.error(new ErrorEvent('HttpErrorResponse'), { status: 401 });
@@ -83,12 +90,14 @@ describe('UnauthorizedInterceptor', () => {
       spyOn(authService, 'isAuthenticated').and.returnValue(false);
 
       [400, 403, 409, 422, 500, 501, 503].forEach((status: number) => {
-        const sub = authService.login(faker.internet.email(), faker.internet.password()).subscribe((_response: AuthToken) => {
+        const sub = authService.login(faker.internet.email(), faker.internet.password()).subscribe(
+          (_response: AuthToken) => {
             fail('Unexpected success');
           },
           (error: HttpErrorResponse) => {
             expect(error.status).toEqual(status);
-          });
+          }
+        );
         const req = httpTestingController.expectOne('http://idp.app.lvh.me:3000/oauth/token');
         req.error(new ErrorEvent('HttpErrorResponse'), { status: status });
 
