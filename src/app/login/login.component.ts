@@ -66,8 +66,7 @@ export class LoginComponent implements OnDestroy, OnInit {
       .login(this.form.controls.username.value, this.form.controls.password.value)
       .pipe(takeUntil(this.destroyed$))
       .subscribe(
-        (tokenResponse: AuthToken) => {
-          console.log('TOKEN RESPONSE = ', tokenResponse);
+        (_tokenResponse: AuthToken) => {
           this.router.navigate([this.returnUrl]);
         },
         (error: HttpErrorResponse) => {
