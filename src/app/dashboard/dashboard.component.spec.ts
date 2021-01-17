@@ -78,11 +78,14 @@ describe('DashboardComponent', () => {
 
     component.ngOnInit();
 
-    component.user$.subscribe((_user: User) => {
-      fail('Unexpected success!');
-    }, (error: HttpErrorResponse) => {
-      expect(error.status).toEqual(400);
-    });
+    component.user$.subscribe(
+      (_user: User) => {
+        fail('Unexpected success!');
+      },
+      (error: HttpErrorResponse) => {
+        expect(error.status).toEqual(400);
+      }
+    );
 
     const request = apolloController.expectOne(GET_BASIC_USER_INFO);
     expect(request.operation.variables.id).toEqual(undefined);
