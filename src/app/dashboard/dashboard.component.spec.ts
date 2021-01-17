@@ -1,6 +1,8 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
 import { ApolloTestingController, ApolloTestingModule } from 'apollo-angular/testing';
 import { GraphQLError } from 'graphql';
 import { authTokenFactory } from 'src/app/factories/auth-token';
@@ -21,7 +23,7 @@ describe('DashboardComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [DashboardComponent],
-      imports: [ApolloTestingModule, HttpClientTestingModule],
+      imports: [ApolloTestingModule, HttpClientTestingModule, MatCardModule, MatIconModule],
       providers: [AuthService]
     }).compileComponents();
   });
