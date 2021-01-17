@@ -1,2 +1,12 @@
-<p>dashboard works!</p>
-<p *ngIf="user$ | async as user">Welcome, {{ user.fullName }}!</p>
+<div class="container">
+  <div class="row justify-content-md-center">
+    <mat-card class="mt-5 mb-3 col-md-12 col-10">
+      <mat-card-header>
+        <mat-card-title>Dashboard</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p *ngIf="user$ | async as user" class="ml-3">Welcome, {{ user.fullName }}!</p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
