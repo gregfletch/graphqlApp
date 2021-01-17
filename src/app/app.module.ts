@@ -16,6 +16,7 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { GraphQLModule } from './graphql.module';
 
 @NgModule({
   declarations: [AppComponent, LoginComponent, RegisterComponent, DashboardComponent],
@@ -23,6 +24,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
     AppRoutingModule,
     BrowserAnimationsModule,
     BrowserModule,
+    GraphQLModule,
     HttpClientModule,
     MatButtonModule,
     MatCardModule,

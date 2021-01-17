@@ -15,7 +15,8 @@
     "importHelpers": true,
     "target": "es2016",
     "module": "es2020",
-    "lib": ["es2018", "dom"]
+    "lib": ["es2018", "dom", "esnext.asynciterable"],
+    "allowSyntheticDefaultImports": true
   },
   "angularCompilerOptions": {
     "strictInjectionParameters": true,

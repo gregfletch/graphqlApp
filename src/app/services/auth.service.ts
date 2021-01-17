@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, EMPTY, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { AccessToken } from 'src/app/models/access-token';
 import { AuthToken } from 'src/app/models/auth-token';
 import { GrantType, OauthTokenRefreshRequestParams, OauthTokenRequestParams } from 'src/app/models/oauth-token-request-params';
 
@@ -35,6 +36,18 @@ export class AuthService {
 
   public get authTokenValue(): AuthToken | null {
     return this.authTokenSubject.value;
+  }
+
+  public get accessToken(): AccessToken | null {
+    if (!this.authTokenValue || !this.authTokenValue.access_token) {
+      return null;
+    }
+
+    const tokenParts: Array<string> = this.authTokenValue.access_token.split('.');
+    return {
+      header: JSON.parse(atob(tokenParts[0])),
+      payload: JSON.parse(atob(tokenParts[1]))
+    };
   }
 
   login(username: string, password: string): Observable<AuthToken> {

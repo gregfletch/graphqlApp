@@ -3,6 +3,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { TestBed } from '@angular/core/testing';
 import { EMPTY } from 'rxjs';
 import { authTokenFactory } from 'src/app/factories/auth-token';
+import { AccessTokenHeader, AccessTokenPayload } from 'src/app/models/access-token';
 import { AuthToken } from 'src/app/models/auth-token';
 
 import * as faker from 'faker';
@@ -225,6 +226,38 @@ describe('AuthService', () => {
       jest.spyOn(service, 'authTokenValue', 'get').mockReturnValue(authToken);
 
       expect(service.isTokenExpired()).toBeFalsy();
+    });
+  });
+
+  describe('accessToken', () => {
+    it('returns null if auth token value is null', () => {
+      jest.spyOn(service, 'authTokenValue', 'get').mockReturnValue(null);
+      expect(service.accessToken).toBeNull();
+    });
+
+    it('returns null if auth token access_token is not set', () => {
+      jest.spyOn(service, 'authTokenValue', 'get').mockReturnValue(authTokenFactory.build({ access_token: '' }));
+      expect(service.accessToken).toBeNull();
+    });
+
+    it('returns the decoded access token if access_token is present in auth token', () => {
+      const accessTokenHeader: AccessTokenHeader = { alg: 'HS256', kid: 'kid1', typ: 'JWT' };
+      const accessTokenPayload: AccessTokenPayload = {
+        aud: 'http://audience.com',
+        exp: 1610868061,
+        iat: 1610853661,
+        iss: 'http://issuer.com',
+        jti: 'id1',
+        scopes: 'api:graphql',
+        sub: 'http://subscriber.com',
+        user: {
+          id: 'user1'
+        }
+      };
+      const accessToken = `${btoa(JSON.stringify(accessTokenHeader))}.${btoa(JSON.stringify(accessTokenPayload))}`;
+      jest.spyOn(service, 'authTokenValue', 'get').mockReturnValue(authTokenFactory.build({ access_token: accessToken }));
+
+      expect(service.accessToken).toEqual({ header: accessTokenHeader, payload: accessTokenPayload });
     });
   });
 });
