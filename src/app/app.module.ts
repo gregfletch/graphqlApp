@@ -14,7 +14,6 @@ import { AuthInterceptor } from 'src/app/interceptors/auth.interceptor';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
-import { RegisterComponent } from './register/register.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { GraphQLModule } from './graphql.module';
 import { NavComponent } from './nav/nav.component';
@@ -24,7 +23,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 
 @NgModule({
-  declarations: [AppComponent, LoginComponent, RegisterComponent, DashboardComponent, NavComponent],
+  declarations: [AppComponent, LoginComponent, DashboardComponent, NavComponent],
   imports: [
     AppRoutingModule,
     BrowserAnimationsModule,
