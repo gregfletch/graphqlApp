@@ -10,6 +10,7 @@ export interface OauthTokenRefreshRequestParams {
   [key: string]: string;
   grant_type: GrantType.refresh_token;
   refresh_token: string;
+  client_id: string;
 }
 
 export enum GrantType {

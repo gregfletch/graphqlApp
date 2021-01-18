@@ -67,7 +67,8 @@ export class AuthService {
 
     const params: OauthTokenRefreshRequestParams = {
       grant_type: GrantType.refresh_token,
-      refresh_token: this.authTokenValue.refresh_token
+      refresh_token: this.authTokenValue.refresh_token,
+      client_id: environment.idp_client_id
     };
     return this.sendTokenRequest(params);
   }
