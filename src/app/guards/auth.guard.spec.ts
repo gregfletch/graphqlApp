@@ -55,14 +55,14 @@ describe('AuthGuard', () => {
       expect(guard.canActivate(new ActivatedRouteSnapshot(), <RouterStateSnapshot>{ url: 'testUrl' })).toBeFalsy();
     });
 
-    it('returns true if the user is authenticated and their auth token is expired', () => {
+    it('returns false if the user is authenticated and their auth token is expired', () => {
       spyOn(authService, 'isAuthenticated').and.returnValue(true);
       spyOn(authService, 'isTokenExpired').and.returnValue(true);
 
       expect(guard.canActivate(new ActivatedRouteSnapshot(), <RouterStateSnapshot>{ url: 'testUrl' })).toBeFalsy();
     });
 
-    it('returns true if the user is not authenticated and their auth token is expired', () => {
+    it('returns false if the user is not authenticated and their auth token is expired', () => {
       spyOn(authService, 'isAuthenticated').and.returnValue(false);
       spyOn(authService, 'isTokenExpired').and.returnValue(true);
 
