@@ -8,6 +8,7 @@ import { LoginComponent } from 'src/app/login/login.component';
 const routes: Routes = [
   { path: '', component: DashboardComponent, canActivate: [AuthGuard] },
   { path: 'login', component: LoginComponent, canActivate: [UserGuard] },
+  { path: 'profile', loadChildren: () => import('./profile/profile.module').then((m) => m.ProfileModule) },
   { path: 'register', loadChildren: () => import('./register/register.module').then((m) => m.RegisterModule) },
   { path: '**', redirectTo: '' }
 ];

@@ -76,7 +76,7 @@ describe('RegisterComponent', () => {
 
       it('sets minLength error if firstName field is too short', () => {
         component.form.setValue({ firstName: 'a', lastName: '', username: '', password: '' });
-        expect(component.form.controls.username.errors).not.toBeNull();
+        expect(component.form.controls.firstName.errors).not.toBeNull();
 
         if (component.form.controls.firstName.errors) {
           expect(component.form.controls.firstName.errors['minlength']).toBeTruthy();
