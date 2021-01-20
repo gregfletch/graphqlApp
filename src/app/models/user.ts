@@ -12,5 +12,5 @@ export interface User {
   lastSignInAt?: string;
   currentSignInIp?: string;
   lastSignInIp?: string;
-  confirmed?: string;
+  confirmed?: boolean;
 }

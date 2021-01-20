@@ -1,0 +1,125 @@
+<div class="container" *ngIf="user">
+  <div class="row justify-content-md-center">
+    <mat-card class="mt-5 mb-3 col-md-12 col-10">
+      <mat-card-header>
+        <mat-card-title>Profile</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <form [formGroup]="form" (ngSubmit)="updateUser(user)">
+          <mat-form-field appearance="outline" class="col-12 mt-3">
+            <mat-label>Email</mat-label>
+            <input
+              matInput
+              disabled
+              [value]="user.email"
+            >
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="col-12">
+            <mat-label>First Name</mat-label>
+            <input
+              matInput
+              id="profile_firstName"
+              name="firstName"
+              minlength="2"
+              maxlength="128"
+              required="required"
+              formControlName="firstName"
+              [ngClass]="{ 'is-invalid': (submitted || firstNameTouched) && form.controls.firstName.errors }"
+              (blur)="firstNameTouched = true"
+            >
+            <div *ngIf="(submitted || firstNameTouched) && form.controls.firstName.errors" class="invalid-feedback">
+              <div *ngIf="form.controls.firstName.errors.required">First name is required</div>
+              <div *ngIf="form.controls.firstName.errors.minlength">First name must be at least 2 characters</div>
+              <div *ngIf="form.controls.firstName.errors.maxlength">First name must be at most 128 characters</div>
+            </div>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="col-12">
+            <mat-label>Last Name</mat-label>
+            <input
+              matInput
+              id="profile_lastName"
+              name="lastName"
+              minlength="2"
+              maxlength="128"
+              required="required"
+              formControlName="lastName"
+              [ngClass]="{ 'is-invalid': (submitted || lastNameTouched) && form.controls.lastName.errors }"
+              (blur)="lastNameTouched = true"
+            >
+            <div *ngIf="(submitted || lastNameTouched) && form.controls.lastName.errors" class="invalid-feedback">
+              <div *ngIf="form.controls.lastName.errors.required">Last name is required</div>
+              <div *ngIf="form.controls.lastName.errors.minlength">Last name must be at least 2 characters</div>
+              <div *ngIf="form.controls.lastName.errors.maxlength">Last name must be at most 128 characters</div>
+            </div>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="col-6">
+            <mat-label>Current Sign In IP Address</mat-label>
+            <input
+              matInput
+              disabled
+              [value]="user.currentSignInIp"
+            >
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="col-6">
+            <mat-label>Current Sign In Time</mat-label>
+            <input
+              matInput
+              disabled
+              [value]="user.currentSignInAt | date:'MMM d, y, h:mm a'"
+            >
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="col-6">
+            <mat-label>Last Sign In IP Address</mat-label>
+            <input
+              matInput
+              disabled
+              [value]="user.lastSignInIp"
+            >
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="col-6">
+            <mat-label>Last Sign In Time</mat-label>
+            <input
+              matInput
+              disabled
+              [value]="user.lastSignInAt | date:'MMM d, y, h:mm a'"
+            >
+          </mat-form-field>
+
+          <mat-checkbox
+            class="col-12 ml-1 mb-5"
+            [disabled]="true"
+            selected
+            labelPosition="before"
+            [checked]="true"
+          >
+            Account Confirmed
+          </mat-checkbox>
+
+          <button
+            mat-raised-button
+            color="primary"
+            class="mr-3 float-right col-md-2 col-6"
+            [disabled]="loading || !dataChanged"
+          >
+            Update<mat-icon *ngIf="loading" class="ml-3"><mat-spinner diameter="20"></mat-spinner></mat-icon>
+          </button>
+
+          <a
+            mat-button
+            class="mr-3 float-right col-md-2 col-6"
+            color="accent"
+            routerLinkActive="mat-flat-button"
+            [routerLink]="''"
+          >Back</a>
+
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
