@@ -29,7 +29,7 @@
     "@angular/router": "^11.0.9",
     "@apollo/client": "^3.0.0",
     "apollo-angular": "^2.2.0",
-    "bootstrap": "^4.5.3",
+    "bootstrap": "^4.6.0",
     "graphql": "^15.0.0",
     "jquery": "^3.5.1",
     "rxjs": "^6.6.3",
