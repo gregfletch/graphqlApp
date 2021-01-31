@@ -7,8 +7,9 @@ import * as faker from 'faker';
 import { authTokenFactory } from 'src/app/factories/auth-token';
 
 import { AuthInterceptor } from 'src/app/interceptors/auth.interceptor';
-import { AuthToken } from 'src/app/models/auth-token';
+import { AuthResponse } from 'src/app/models/auth-response';
 import { AuthService } from 'src/app/services/auth.service';
+import { environment } from 'src/environments/environment';
 
 describe('UnauthorizedInterceptor', () => {
   let authService: AuthService;
@@ -34,7 +35,7 @@ describe('UnauthorizedInterceptor', () => {
 
       authService.login(faker.internet.email(), faker.internet.password()).subscribe();
 
-      const req = httpTestingController.expectOne('http://idp.app.lvh.me:3000/oauth/token');
+      const req = httpTestingController.expectOne(`${environment.idp_base_url}/users/sign_in`);
       expect(req.request.headers.has('Authorization')).toBeFalsy();
     });
 
@@ -45,7 +46,7 @@ describe('UnauthorizedInterceptor', () => {
 
       authService.login(faker.internet.email(), faker.internet.password()).subscribe();
 
-      const req = httpTestingController.expectOne('http://idp.app.lvh.me:3000/oauth/token');
+      const req = httpTestingController.expectOne(`${environment.idp_base_url}/users/sign_in`);
       expect(req.request.headers.has('Authorization')).toBeFalsy();
     });
 
@@ -54,7 +55,7 @@ describe('UnauthorizedInterceptor', () => {
 
       authService.login(faker.internet.email(), faker.internet.password()).subscribe();
 
-      const req = httpTestingController.expectOne('http://idp.app.lvh.me:3000/oauth/token');
+      const req = httpTestingController.expectOne(`${environment.idp_base_url}/users/sign_in`);
       expect(req.request.headers.has('Authorization')).toBeTruthy();
     });
   });
@@ -71,7 +72,7 @@ describe('UnauthorizedInterceptor', () => {
       spyOn(authService, 'isAuthenticated').and.returnValue(false);
 
       const sub = authService.login(faker.internet.email(), faker.internet.password()).subscribe(
-        (_response: AuthToken) => {
+        (_response: AuthResponse) => {
           fail('Unexpected success');
         },
         (error: HttpErrorResponse) => {
@@ -79,7 +80,7 @@ describe('UnauthorizedInterceptor', () => {
         }
       );
 
-      const req = httpTestingController.expectOne('http://idp.app.lvh.me:3000/oauth/token');
+      const req = httpTestingController.expectOne(`${environment.idp_base_url}/users/sign_in`);
       req.error(new ErrorEvent('HttpErrorResponse'), { status: 401 });
 
       expect(router.navigate).toHaveBeenCalledWith(['/login']);
@@ -91,14 +92,14 @@ describe('UnauthorizedInterceptor', () => {
 
       [400, 403, 409, 422, 500, 501, 503].forEach((status: number) => {
         const sub = authService.login(faker.internet.email(), faker.internet.password()).subscribe(
-          (_response: AuthToken) => {
+          (_response: AuthResponse) => {
             fail('Unexpected success');
           },
           (error: HttpErrorResponse) => {
             expect(error.status).toEqual(status);
           }
         );
-        const req = httpTestingController.expectOne('http://idp.app.lvh.me:3000/oauth/token');
+        const req = httpTestingController.expectOne(`${environment.idp_base_url}/users/sign_in`);
         req.error(new ErrorEvent('HttpErrorResponse'), { status: status });
 
         expect(router.navigate).not.toHaveBeenCalled();

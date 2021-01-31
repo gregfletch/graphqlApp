@@ -2,8 +2,9 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Observable, ObservableInput, Subject, throwError } from 'rxjs';
+import { catchError, mergeMap, takeUntil } from 'rxjs/operators';
+import { AuthResponse } from 'src/app/models/auth-response';
 import { AuthToken } from 'src/app/models/auth-token';
 import { AuthService } from 'src/app/services/auth.service';
 
@@ -64,30 +65,27 @@ export class LoginComponent implements OnDestroy, OnInit {
     this.loading = true;
     this.authService
       .login(this.form.controls.username.value, this.form.controls.password.value)
-      .pipe(takeUntil(this.destroyed$))
+      .pipe(
+        catchError(
+          (error: HttpErrorResponse, _caught: Observable<AuthResponse>): ObservableInput<AuthResponse> => {
+            console.log('ERROR ON LOGIN', error);
+            return throwError(error);
+          }
+        ),
+        mergeMap(
+          (_response: AuthResponse, _index: number): ObservableInput<AuthToken> => {
+            return this.authService.pkceAuthToken(this.form.controls.username.value);
+          }
+        )
+      )
       .subscribe(
-        (_tokenResponse: AuthToken) => {
+        (_authTokenResponse: AuthToken) => {
           this.router.navigate([this.returnUrl]);
         },
-        (error: HttpErrorResponse) => {
-          // this.alertService.error(error);
+        (error: HttpErrorResponse): void => {
           this.loading = false;
-          console.log('ERROR = ', error);
+          console.log('ERROR ON FETCHING AUTH TOKEN', error);
         }
       );
-
-    // const pkceParams: PkceParams = PkceUtils.pkceChallengeAndVerifier(128);
-    // console.log('PKCE PARAMS = ', pkceParams);
-    // this.userService
-    //   .requestAuthorizationCode(pkceParams)
-    //   .pipe(takeUntil(this.destroyed$))
-    //   .subscribe(
-    //     (data) => {
-    //       console.log('DATA = ', data);
-    //     },
-    //     (error) => {
-    //       console.log('ERROR = ', error);
-    //     }
-    //   );
   }
 }

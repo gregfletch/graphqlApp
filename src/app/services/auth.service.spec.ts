@@ -2,13 +2,18 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { EMPTY } from 'rxjs';
+import { authResponseFactory } from 'src/app/factories/auth-response';
 import { authTokenFactory } from 'src/app/factories/auth-token';
+import { pkceAuthorizationResponse } from 'src/app/factories/pkce-authorization-response';
 import { AccessTokenHeader, AccessTokenPayload } from 'src/app/models/access-token';
+import { AuthResponse } from 'src/app/models/auth-response';
 import { AuthToken } from 'src/app/models/auth-token';
 
 import * as faker from 'faker';
+import { PkceAuthorizationResponse } from 'src/app/models/pkce-authorization-response';
 
 import { AuthService } from 'src/app/services/auth.service';
+import { environment } from 'src/environments/environment';
 import SpyInstance = jest.SpyInstance;
 
 describe('AuthService', () => {
@@ -47,7 +52,56 @@ describe('AuthService', () => {
   });
 
   describe('login', () => {
-    const authToken: AuthToken = authTokenFactory.build();
+    const email: string = faker.internet.email();
+    const password: string = faker.internet.password(8);
+    const authResponse: AuthResponse = authResponseFactory.build();
+
+    beforeEach(() => {
+      httpTestingController = TestBed.inject(HttpTestingController);
+    });
+
+    afterEach(() => {
+      // After every test, assert that there are no more pending requests.
+      httpTestingController.verify();
+    });
+
+    it('return auth response on success', () => {
+      service.login(email, password).subscribe((response: AuthResponse) => {
+        expect(response).toEqual(authResponse);
+      });
+
+      // The following `expectOne()` will match the request's URL.
+      // If no requests or multiple requests matched that URL
+      // `expectOne()` would throw.
+      const req = httpTestingController.expectOne(`${environment.idp_base_url}/users/sign_in`);
+
+      // Assert that the request is a POST.
+      expect(req.request.method).toEqual('POST');
+
+      // Respond with mock data, causing Observable to resolve.
+      // Subscribe callback asserts that correct data was returned.
+      req.flush(authResponse);
+    });
+
+    it('forwards error response onto calling component on error', () => {
+      service.login(faker.internet.email(), faker.internet.password()).subscribe(
+        (_response: AuthResponse) => {
+          fail('Unexpected success');
+        },
+        (error: HttpErrorResponse) => {
+          expect(error.status).toEqual(400);
+        }
+      );
+
+      const req = httpTestingController.expectOne(`${environment.idp_base_url}/users/sign_in`);
+      expect(req.request.method).toEqual('POST');
+
+      req.error(new ErrorEvent('HttpErrorResponse'), { status: 400 });
+    });
+  });
+
+  describe('pkceAuthToken', () => {
+    const authorizationResponse: PkceAuthorizationResponse = pkceAuthorizationResponse.build();
 
     beforeEach(() => {
       httpTestingController = TestBed.inject(HttpTestingController);
@@ -60,50 +114,100 @@ describe('AuthService', () => {
       httpTestingController.verify();
     });
 
-    it('returns auth token on success', () => {
-      service.login(faker.internet.email(), faker.internet.password()).subscribe((response: AuthToken) => {
-        // When observable resolves, result should match test data
-        expect(response).toEqual(authToken);
-      });
+    it('calls /oauth/token if call to oauth/authorize is successful', () => {
+      service.pkceAuthToken(faker.internet.email()).subscribe();
 
-      // The following `expectOne()` will match the request's URL.
-      // If no requests or multiple requests matched that URL
-      // `expectOne()` would throw.
-      const req = httpTestingController.expectOne('http://idp.app.lvh.me:3000/oauth/token');
-
-      // Assert that the request is a POST.
+      const req = httpTestingController.expectOne(`${environment.idp_base_url}/oauth/authorize`);
       expect(req.request.method).toEqual('POST');
+      req.flush(authorizationResponse);
 
-      // Respond with mock data, causing Observable to resolve.
-      // Subscribe callback asserts that correct data was returned.
-      req.flush(authToken);
+      httpTestingController.expectOne(`${environment.idp_base_url}/oauth/token`);
     });
 
-    it('stores the auth token in local storage on success', () => {
-      service.login(faker.internet.email(), faker.internet.password()).subscribe((_response: AuthToken) => {
-        expect(localStorage.setItem).toHaveBeenCalledWith(service.AUTH_TOKEN_LOCAL_STORAGE_KEY, btoa(JSON.stringify(authToken)));
-      });
-
-      const req = httpTestingController.expectOne('http://idp.app.lvh.me:3000/oauth/token');
-      expect(req.request.method).toEqual('POST');
-
-      req.flush(authToken);
-    });
-
-    it('does not write to local storage on error', () => {
-      service.login(faker.internet.email(), faker.internet.password()).subscribe(
+    it('does not call /oauth/token if authorization call fails', () => {
+      service.pkceAuthToken(faker.internet.email()).subscribe(
         (_response: AuthToken) => {
           fail('Unexpected success');
         },
         (error: HttpErrorResponse) => {
-          expect(localStorage.setItem).not.toHaveBeenCalled();
           expect(error.status).toEqual(400);
         }
       );
 
-      const req = httpTestingController.expectOne('http://idp.app.lvh.me:3000/oauth/token');
+      const req = httpTestingController.expectOne(`${environment.idp_base_url}/oauth/authorize`);
       expect(req.request.method).toEqual('POST');
+      req.error(new ErrorEvent('HttpErrorResponse'), { status: 400 });
 
+      httpTestingController.expectNone(`${environment.idp_base_url}/oauth/token`);
+    });
+
+    it('returns auth token if the PKCE grant flow is successful', () => {
+      const authToken: AuthToken = authTokenFactory.build();
+      service.pkceAuthToken(faker.internet.email()).subscribe((response: AuthToken) => {
+        // When observable resolves, result should match test data
+        expect(response).toEqual(authToken);
+      });
+
+      let req = httpTestingController.expectOne(`${environment.idp_base_url}/oauth/authorize`);
+      expect(req.request.method).toEqual('POST');
+      req.flush(authorizationResponse);
+
+      req = httpTestingController.expectOne(`${environment.idp_base_url}/oauth/token`);
+      expect(req.request.method).toEqual('POST');
+      req.flush(authToken);
+    });
+
+    it('stores the auth token in local storage on success', () => {
+      const authToken: AuthToken = authTokenFactory.build();
+      service.pkceAuthToken(faker.internet.email()).subscribe((_response: AuthToken) => {
+        expect(localStorage.setItem).toHaveBeenCalledTimes(1);
+        expect(localStorage.setItem).toHaveBeenCalledWith(service.AUTH_TOKEN_LOCAL_STORAGE_KEY, btoa(JSON.stringify(authToken)));
+      });
+
+      let req = httpTestingController.expectOne(`${environment.idp_base_url}/oauth/authorize`);
+      expect(req.request.method).toEqual('POST');
+      req.flush(authorizationResponse);
+
+      req = httpTestingController.expectOne(`${environment.idp_base_url}/oauth/token`);
+      expect(req.request.method).toEqual('POST');
+      req.flush(authToken);
+    });
+
+    it('forwards error response if call to /oauth/token is not successful', () => {
+      service.pkceAuthToken(faker.internet.email()).subscribe(
+        (_response: AuthToken) => {
+          fail('Unexpected success');
+        },
+        (error: HttpErrorResponse) => {
+          expect(error.status).toEqual(400);
+        }
+      );
+
+      let req = httpTestingController.expectOne(`${environment.idp_base_url}/oauth/authorize`);
+      expect(req.request.method).toEqual('POST');
+      req.flush(authorizationResponse);
+
+      req = httpTestingController.expectOne(`${environment.idp_base_url}/oauth/token`);
+      expect(req.request.method).toEqual('POST');
+      req.error(new ErrorEvent('HttpErrorResponse'), { status: 400 });
+    });
+
+    it('does not write to localStorage if call to /oauth/token is not successful', () => {
+      service.pkceAuthToken(faker.internet.email()).subscribe(
+        (_response: AuthToken) => {
+          fail('Unexpected success');
+        },
+        (_error: HttpErrorResponse) => {
+          expect(localStorage.setItem).not.toHaveBeenCalled();
+        }
+      );
+
+      let req = httpTestingController.expectOne(`${environment.idp_base_url}/oauth/authorize`);
+      expect(req.request.method).toEqual('POST');
+      req.flush(authorizationResponse);
+
+      req = httpTestingController.expectOne(`${environment.idp_base_url}/oauth/token`);
+      expect(req.request.method).toEqual('POST');
       req.error(new ErrorEvent('HttpErrorResponse'), { status: 400 });
     });
   });
@@ -133,7 +237,7 @@ describe('AuthService', () => {
       // The following `expectOne()` will match the request's URL.
       // If no requests or multiple requests matched that URL
       // `expectOne()` would throw.
-      const req = httpTestingController.expectOne('http://idp.app.lvh.me:3000/oauth/token');
+      const req = httpTestingController.expectOne(`${environment.idp_base_url}/oauth/token`);
 
       // Assert that the request is a POST.
       expect(req.request.method).toEqual('POST');
@@ -148,7 +252,7 @@ describe('AuthService', () => {
         expect(localStorage.setItem).toHaveBeenCalledWith(service.AUTH_TOKEN_LOCAL_STORAGE_KEY, btoa(JSON.stringify(authToken)));
       });
 
-      const req = httpTestingController.expectOne('http://idp.app.lvh.me:3000/oauth/token');
+      const req = httpTestingController.expectOne(`${environment.idp_base_url}/oauth/token`);
       expect(req.request.method).toEqual('POST');
 
       req.flush(authToken);
@@ -165,7 +269,7 @@ describe('AuthService', () => {
         }
       );
 
-      const req = httpTestingController.expectOne('http://idp.app.lvh.me:3000/oauth/token');
+      const req = httpTestingController.expectOne(`${environment.idp_base_url}/oauth/token`);
       expect(req.request.method).toEqual('POST');
 
       req.error(new ErrorEvent('HttpErrorResponse'), { status: 400 });

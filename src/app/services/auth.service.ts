@@ -1,10 +1,14 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, EMPTY, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, mergeMap } from 'rxjs/operators';
 import { AccessToken } from 'src/app/models/access-token';
+import { AuthResponse } from 'src/app/models/auth-response';
 import { AuthToken } from 'src/app/models/auth-token';
+import { LoginParams } from 'src/app/models/login-params';
 import { GrantType, OauthTokenRefreshRequestParams, OauthTokenRequestParams } from 'src/app/models/oauth-token-request-params';
+import { PkceAuthorizationResponse } from 'src/app/models/pkce-authorization-response';
+import { PkceChallenge } from 'src/app/models/pkce-challenge';
 
 import { environment } from 'src/environments/environment';
 
@@ -16,10 +20,34 @@ export class AuthService {
   public authToken: Observable<AuthToken | null>;
   public readonly AUTH_TOKEN_LOCAL_STORAGE_KEY = 'authToken';
 
-  private readonly POST_OAUTH_TOKEN_PATH = environment.idp_base_url + '/oauth/token';
+  private readonly POST_OAUTH_AUTHORIZE_PATH = `${environment.idp_base_url}/oauth/authorize`;
+  private readonly POST_OAUTH_TOKEN_PATH = `${environment.idp_base_url}/oauth/token`;
+  private readonly POST_USER_LOGIN_PATH = `${environment.idp_base_url}/users/sign_in`;
 
   private static setDefaultHeaders(): HttpHeaders {
     return new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8', Accept: 'application/json' });
+  }
+
+  private static randomString(length: number, mask: string): string {
+    let result = '';
+    for (let i = 0; i < length; i++) {
+      result += mask.charAt(Math.floor(Math.random() * mask.length));
+    }
+
+    return result;
+  }
+
+  private static generateVerifier(length: number): string {
+    const mask = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~';
+
+    return AuthService.randomString(length, mask);
+  }
+
+  private static pkceChallenge(length: number): PkceChallenge {
+    const verifier = AuthService.generateVerifier(length);
+
+    // Challenge == verifier since we are using plain challenge method for now
+    return { challenge: verifier, verifier: verifier };
   }
 
   constructor(private httpClient: HttpClient) {
@@ -50,14 +78,52 @@ export class AuthService {
     };
   }
 
-  login(username: string, password: string): Observable<AuthToken> {
-    const params: OauthTokenRequestParams = {
-      client_id: environment.idp_client_id,
-      email: username,
-      grant_type: GrantType.password,
-      password: password
+  login(email: string, password: string): Observable<AuthResponse> {
+    const params: LoginParams = {
+      user: {
+        email: email,
+        password: password
+      }
     };
-    return this.sendTokenRequest(params);
+
+    return this.httpClient.post<AuthResponse>(this.POST_USER_LOGIN_PATH, params);
+  }
+
+  pkceAuthToken(email: string): Observable<AuthToken> {
+    const pkceChallenge: PkceChallenge = AuthService.pkceChallenge(128);
+    const httpParams: HttpParams = new HttpParams({
+      fromObject: {
+        client_id: environment.idp_client_id,
+        response_type: 'code',
+        redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
+        scope: 'api:graphql',
+        code_challenge_method: 'plain',
+        code_challenge: pkceChallenge.challenge,
+        email: email
+      }
+    });
+
+    return this.httpClient.post<PkceAuthorizationResponse>(this.POST_OAUTH_AUTHORIZE_PATH, httpParams).pipe(
+      mergeMap((response: PkceAuthorizationResponse, _index: number) => {
+        const tokenHttpParams: HttpParams = new HttpParams({
+          fromObject: {
+            grant_type: 'authorization_code',
+            client_id: environment.idp_client_id,
+            code: response.redirect_uri.code,
+            code_verifier: pkceChallenge.verifier,
+            redirect_uri: 'urn:ietf:wg:oauth:2.0:oob'
+          }
+        });
+        return this.httpClient.post<AuthToken>(this.POST_OAUTH_TOKEN_PATH, tokenHttpParams).pipe(
+          map((token: AuthToken) => {
+            localStorage.setItem(this.AUTH_TOKEN_LOCAL_STORAGE_KEY, btoa(JSON.stringify(token)));
+            this.authTokenSubject.next(token);
+
+            return token;
+          })
+        );
+      })
+    );
   }
 
   refreshToken(): Observable<AuthToken> {
@@ -89,12 +155,11 @@ export class AuthService {
   }
 
   private sendTokenRequest(params: OauthTokenRequestParams | OauthTokenRefreshRequestParams): Observable<AuthToken> {
-    const url: string = this.POST_OAUTH_TOKEN_PATH;
     const headers: HttpHeaders = AuthService.setDefaultHeaders();
     const httpParams: HttpParams = new HttpParams({ fromObject: params });
 
     return this.httpClient
-      .post<AuthToken>(url, httpParams, { headers: headers })
+      .post<AuthToken>(this.POST_OAUTH_TOKEN_PATH, httpParams, { headers: headers })
       .pipe(
         map((token: AuthToken) => {
           localStorage.setItem(this.AUTH_TOKEN_LOCAL_STORAGE_KEY, btoa(JSON.stringify(token)));
