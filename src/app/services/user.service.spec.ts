@@ -6,6 +6,7 @@ import { RegisterParams } from 'src/app/models/register-params';
 import { RestResponse } from 'src/app/models/rest-response';
 
 import { UserService } from 'src/app/services/user.service';
+import { environment } from 'src/environments/environment';
 
 describe('UserService', () => {
   let service: UserService;
@@ -46,7 +47,7 @@ describe('UserService', () => {
           expect(response).toEqual(expectedResponse);
         });
 
-      const req = httpTestingController.expectOne('http://idp.app.lvh.me:3000/users');
+      const req = httpTestingController.expectOne(`${environment.idp_base_url}/users`);
       expect(req.request.method).toEqual('POST');
 
       req.flush(expectedResponse);
@@ -62,7 +63,7 @@ describe('UserService', () => {
         }
       );
 
-      const req = httpTestingController.expectOne('http://idp.app.lvh.me:3000/users');
+      const req = httpTestingController.expectOne(`${environment.idp_base_url}/users`);
       expect(req.request.method).toEqual('POST');
 
       req.error(new ErrorEvent('HttpErrorResponse'), { status: 400 });

@@ -12,8 +12,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import * as faker from 'faker';
 import { EMPTY, of, throwError } from 'rxjs';
+import { authResponseFactory } from 'src/app/factories/auth-response';
 import { authTokenFactory } from 'src/app/factories/auth-token';
 import { LoginComponent } from 'src/app/login/login.component';
+import { AuthResponse } from 'src/app/models/auth-response';
 import { AuthToken } from 'src/app/models/auth-token';
 import { AuthService } from 'src/app/services/auth.service';
 import { UserService } from 'src/app/services/user.service';
@@ -216,17 +218,6 @@ describe('LoginComponent', () => {
       expect(authService.login).not.toHaveBeenCalled();
     });
 
-    it('redirects to dashboard on successful login', () => {
-      const authToken: AuthToken = authTokenFactory.build();
-      spyOn(authService, 'login').and.returnValue(of(authToken));
-      spyOn(router, 'navigate');
-
-      component.form.setValue({ username: faker.internet.email(), password: faker.internet.password(8) });
-
-      component.login();
-      expect(router.navigate).toHaveBeenCalledWith([component.returnUrl]);
-    });
-
     it('does not redirect on login error', () => {
       spyOn(authService, 'login').and.returnValue(throwError(new HttpErrorResponse({ status: 400 })));
       spyOn(router, 'navigate');
@@ -245,6 +236,54 @@ describe('LoginComponent', () => {
 
       component.login();
       expect(component.loading).toBeFalsy();
+    });
+
+    describe('request auth token', () => {
+      const authResponse: AuthResponse = authResponseFactory.build();
+      const email: string = faker.internet.email();
+      let authTokenRequestSpy: jasmine.Spy;
+
+      beforeEach(() => {
+        spyOn(authService, 'login').and.returnValue(of(authResponse));
+        authTokenRequestSpy = spyOn(authService, 'pkceAuthToken');
+
+        component.form.setValue({ username: email, password: faker.internet.password(8) });
+      });
+
+      it('requests an auth token after successful login', () => {
+        component.login();
+
+        expect(authService.pkceAuthToken).toHaveBeenCalledTimes(1);
+        expect(authService.pkceAuthToken).toHaveBeenCalledWith(email);
+      });
+
+      it('redirects to dashboard on successful login and auth token retrieved', () => {
+        const authToken: AuthToken = authTokenFactory.build();
+        authTokenRequestSpy.and.returnValue(of(authToken));
+        spyOn(router, 'navigate');
+
+        component.login();
+
+        expect(router.navigate).toHaveBeenCalledWith([component.returnUrl]);
+      });
+
+      it('does not redirect if call for auth token fails', () => {
+        authTokenRequestSpy.and.returnValue(throwError(new HttpErrorResponse({ status: 400 })));
+        spyOn(router, 'navigate');
+
+        component.login();
+
+        expect(router.navigate).not.toHaveBeenCalled();
+      });
+
+      it('sets loading flag to false if call for auth token fails', () => {
+        authTokenRequestSpy.and.returnValue(throwError(new HttpErrorResponse({ status: 400 })));
+        spyOn(router, 'navigate');
+
+        component.login();
+
+        expect(component.loading).toBeFalsy();
+      });
     });
   });
 });

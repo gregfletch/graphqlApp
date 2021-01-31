@@ -3,6 +3,7 @@ export interface LoginParams {
 }
 
 interface UserLoginParams {
+  [key: string]: string;
   email: string;
   password: string;
 }
