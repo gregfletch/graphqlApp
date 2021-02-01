@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, EMPTY, Observable } from 'rxjs';
-import { map, mergeMap } from 'rxjs/operators';
+import { map, mergeMap, tap } from 'rxjs/operators';
 import { AccessToken } from 'src/app/models/access-token';
 import { AuthResponse } from 'src/app/models/auth-response';
 import { AuthToken } from 'src/app/models/auth-token';
@@ -9,6 +9,7 @@ import { LoginParams } from 'src/app/models/login-params';
 import { GrantType, OauthTokenRefreshRequestParams, OauthTokenRequestParams } from 'src/app/models/oauth-token-request-params';
 import { PkceAuthorizationResponse } from 'src/app/models/pkce-authorization-response';
 import { PkceChallenge } from 'src/app/models/pkce-challenge';
+import { RestResponse } from 'src/app/models/rest-response';
 
 import { environment } from 'src/environments/environment';
 
@@ -23,6 +24,7 @@ export class AuthService {
   private readonly POST_OAUTH_AUTHORIZE_PATH = `${environment.idp_base_url}/oauth/authorize`;
   private readonly POST_OAUTH_TOKEN_PATH = `${environment.idp_base_url}/oauth/token`;
   private readonly POST_USER_LOGIN_PATH = `${environment.idp_base_url}/users/sign_in`;
+  private readonly DELETE_USER_LOGOUT_PATH = `${environment.idp_base_url}/users/sign_out`;
 
   private static setDefaultHeaders(): HttpHeaders {
     return new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8', Accept: 'application/json' });
@@ -87,6 +89,15 @@ export class AuthService {
     };
 
     return this.httpClient.post<AuthResponse>(this.POST_USER_LOGIN_PATH, params);
+  }
+
+  logout(): Observable<RestResponse> {
+    return this.httpClient.delete<RestResponse>(this.DELETE_USER_LOGOUT_PATH).pipe(
+      tap((_response: RestResponse) => {
+        localStorage.removeItem(this.AUTH_TOKEN_LOCAL_STORAGE_KEY);
+        this.authTokenSubject.next(null);
+      })
+    );
   }
 
   pkceAuthToken(email: string): Observable<AuthToken> {

@@ -11,6 +11,7 @@ import { AuthToken } from 'src/app/models/auth-token';
 
 import * as faker from 'faker';
 import { PkceAuthorizationResponse } from 'src/app/models/pkce-authorization-response';
+import { RestResponse } from 'src/app/models/rest-response';
 
 import { AuthService } from 'src/app/services/auth.service';
 import { environment } from 'src/environments/environment';
@@ -95,6 +96,47 @@ describe('AuthService', () => {
 
       const req = httpTestingController.expectOne(`${environment.idp_base_url}/users/sign_in`);
       expect(req.request.method).toEqual('POST');
+
+      req.error(new ErrorEvent('HttpErrorResponse'), { status: 400 });
+    });
+  });
+
+  describe('logout', () => {
+    beforeEach(() => {
+      httpTestingController = TestBed.inject(HttpTestingController);
+    });
+
+    afterEach(() => {
+      // After every test, assert that there are no more pending requests.
+      httpTestingController.verify();
+    });
+
+    it('clear auth token from local storage and clears the auth token value from the service on success', () => {
+      spyOn(localStorage, 'removeItem');
+      service.logout().subscribe((_response: RestResponse) => {
+        expect(localStorage.removeItem).toHaveBeenCalledTimes(1);
+        expect(localStorage.removeItem).toHaveBeenCalledWith(service.AUTH_TOKEN_LOCAL_STORAGE_KEY);
+        expect(service.authTokenValue).toBeNull();
+      });
+
+      const req = httpTestingController.expectOne(`${environment.idp_base_url}/users/sign_out`);
+      expect(req.request.method).toEqual('DELETE');
+
+      req.flush({});
+    });
+
+    it('forwards error response onto calling component on error', () => {
+      service.logout().subscribe(
+        (_response: RestResponse) => {
+          fail('Unexpected success');
+        },
+        (error: HttpErrorResponse) => {
+          expect(error.status).toEqual(400);
+        }
+      );
+
+      const req = httpTestingController.expectOne(`${environment.idp_base_url}/users/sign_out`);
+      expect(req.request.method).toEqual('DELETE');
 
       req.error(new ErrorEvent('HttpErrorResponse'), { status: 400 });
     });
