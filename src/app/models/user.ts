@@ -1,3 +1,5 @@
+import { LoginActivity } from 'src/app/models/login-activity';
+
 export interface User {
   id: string;
   username?: string;
@@ -13,4 +15,5 @@ export interface User {
   currentSignInIp?: string;
   lastSignInIp?: string;
   confirmed?: boolean;
+  loginActivities?: Array<LoginActivity>;
 }

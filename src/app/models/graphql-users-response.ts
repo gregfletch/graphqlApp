@@ -8,6 +8,14 @@ interface GraphqlUsersResponseObject {
   users: Array<User>;
 }
 
+export interface GraphqlUserResponse {
+  data: GraphqlUserResponseObject;
+}
+
+interface GraphqlUserResponseObject {
+  user: User;
+}
+
 export interface GraphqlUpdateUserResponse {
   data: GraphqlUpdateUserResponseObject;
 }
