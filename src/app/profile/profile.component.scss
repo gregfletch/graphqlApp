@@ -3,15 +3,15 @@
   overflow: hidden;
 }
 
-tr.login-activity-detail-row {
+.login-activity-detail-row {
   height: 0;
 }
 
-tr.login-activity-row:not(.login-activity-expanded-row):hover {
-  background: whitesmoke;
+.login-activity-row:not(.login-activity-expanded-row):hover {
+  background: #f5f5f5;
 }
 
-tr.login-activity-row:not(.login-activity-expanded-row):active {
+.login-activity-row:not(.login-activity-expanded-row):active {
   background: #efefef;
 }
 
