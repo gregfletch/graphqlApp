@@ -2,8 +2,9 @@ import { NgModule } from '@angular/core';
 import { APOLLO_OPTIONS } from 'apollo-angular';
 import { ApolloClientOptions, InMemoryCache } from '@apollo/client/core';
 import { HttpLink } from 'apollo-angular/http';
+import { environment } from 'src/environments/environment';
 
-const uri = 'http://idp.app.lvh.me:3000/graphql';
+const uri = `${environment.idp_base_url}/graphql`;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
   return {

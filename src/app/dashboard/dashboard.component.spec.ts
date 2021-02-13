@@ -11,6 +11,7 @@ import { User } from 'src/app/models/user';
 import { AuthService } from 'src/app/services/auth.service';
 
 import * as faker from 'faker';
+import { UserService } from 'src/app/services/user.service';
 
 import { DashboardComponent, GET_BASIC_USER_INFO } from './dashboard.component';
 
@@ -19,12 +20,13 @@ describe('DashboardComponent', () => {
   let fixture: ComponentFixture<DashboardComponent>;
   let apolloController: ApolloTestingController;
   let authService: AuthService;
+  let userService: UserService;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [DashboardComponent],
       imports: [ApolloTestingModule, HttpClientTestingModule, MatCardModule, MatIconModule],
-      providers: [AuthService]
+      providers: [AuthService, UserService]
     }).compileComponents();
   });
 
@@ -32,6 +34,7 @@ describe('DashboardComponent', () => {
     fixture = TestBed.createComponent(DashboardComponent);
     apolloController = TestBed.inject(ApolloTestingController);
     authService = TestBed.inject(AuthService);
+    userService = TestBed.inject(UserService);
 
     component = fixture.componentInstance;
   });
@@ -63,14 +66,42 @@ describe('DashboardComponent', () => {
     // Respond with mock data, causing Observable to resolve.
     request.flush({
       data: {
-        users: [
-          {
-            id: 'user1',
-            firstName: firstName,
-            lastName: lastName,
-            fullName: `${firstName} ${lastName}`
-          }
-        ]
+        user: {
+          id: 'user1',
+          firstName: firstName,
+          lastName: lastName,
+          fullName: `${firstName} ${lastName}`
+        }
+      }
+    });
+  });
+
+  it('stores the fetched user data in the user service', () => {
+    const firstName: string = faker.name.firstName();
+    const lastName: string = faker.name.lastName();
+    const authToken: AuthToken = authTokenFactory.build();
+    jest.spyOn(authService, 'authTokenValue', 'get').mockReturnValue(authToken);
+
+    component.ngOnInit();
+
+    spyOn(userService, 'user');
+    component.user$.subscribe((user: User) => {
+      expect(userService.user).toHaveBeenCalledTimes(1);
+      expect(userService.user).toHaveBeenCalledWith(user);
+    });
+
+    const request = apolloController.expectOne(GET_BASIC_USER_INFO);
+    expect(request.operation.variables.id).toEqual('user1');
+
+    // Respond with mock data, causing Observable to resolve.
+    request.flush({
+      data: {
+        user: {
+          id: 'user1',
+          firstName: firstName,
+          lastName: lastName,
+          fullName: `${firstName} ${lastName}`
+        }
       }
     });
   });

@@ -3,13 +3,14 @@ import { ApolloQueryResult, gql } from '@apollo/client/core';
 import { Apollo } from 'apollo-angular';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { GraphqlUsersResponse } from 'src/app/models/graphql-users-response';
+import { GraphqlUserResponse } from 'src/app/models/graphql-users-response';
 import { User } from 'src/app/models/user';
 import { AuthService } from 'src/app/services/auth.service';
+import { UserService } from 'src/app/services/user.service';
 
 export const GET_BASIC_USER_INFO = gql`
   query GetUserById($id: ID!) {
-    users(id: $id) {
+    user(id: $id) {
       id
       fullName
       firstName
@@ -26,7 +27,7 @@ export const GET_BASIC_USER_INFO = gql`
 export class DashboardComponent implements OnInit {
   user$: Observable<User> = new Observable<User>();
 
-  constructor(private apollo: Apollo, private authService: AuthService) {}
+  constructor(private apollo: Apollo, private authService: AuthService, private userService: UserService) {}
 
   ngOnInit(): void {
     this.user$ = this.apollo
@@ -38,8 +39,9 @@ export class DashboardComponent implements OnInit {
       })
       .valueChanges.pipe(
         map((result: ApolloQueryResult<unknown>) => {
-          const queryResult: GraphqlUsersResponse = result as GraphqlUsersResponse;
-          return queryResult.data.users[0];
+          const queryResult: GraphqlUserResponse = result as GraphqlUserResponse;
+          this.userService.user = queryResult.data.user;
+          return queryResult.data.user;
         })
       );
   }

@@ -3,12 +3,15 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { RegisterParams } from 'src/app/models/register-params';
 import { RestResponse } from 'src/app/models/rest-response';
+import { User } from 'src/app/models/user';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
+  public user: User | null = null;
+
   constructor(private httpClient: HttpClient) {}
 
   register(firstName: string, lastName: string, username: string, password: string): Observable<RestResponse> {
