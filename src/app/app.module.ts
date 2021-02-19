@@ -21,9 +21,11 @@ import { LayoutModule } from '@angular/cdk/layout';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
+import { SuccessSnackbarComponent } from './success-snackbar/success-snackbar.component';
+import { ErrorSnackbarComponent } from './error-snackbar/error-snackbar.component';
 
 @NgModule({
-  declarations: [AppComponent, LoginComponent, DashboardComponent, NavComponent],
+  declarations: [AppComponent, LoginComponent, DashboardComponent, NavComponent, SuccessSnackbarComponent, ErrorSnackbarComponent],
   imports: [
     AppRoutingModule,
     BrowserAnimationsModule,

@@ -1,0 +1,73 @@
+<div class="container">
+  <div class="row justify-content-md-center">
+    <mat-card class="mt-5 mb-3 col-md-12 col-10">
+      <mat-card-header>
+        <mat-card-title>Security</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <form [formGroup]="form" (ngSubmit)="changePassword()">
+          <mat-form-field appearance="outline" class="col-12 mt-3">
+            <mat-label>Current Password</mat-label>
+            <input
+              id="profile_current_password"
+              name="currentPassword"
+              matInput
+              minlength="8"
+              maxlength="128"
+              required="required"
+              type="password"
+              formControlName="currentPassword"
+              [ngClass]="{ 'is-invalid': (submitted || currentPasswordTouched) && form.controls.newPassword.errors }"
+              (blur)="currentPasswordTouched = true"
+            >
+            <div *ngIf="(submitted || currentPasswordTouched) && form.controls.currentPassword.errors" class="invalid-feedback">
+              <div *ngIf="form.controls.currentPassword.errors.required">Current password is required</div>
+              <div *ngIf="form.controls.currentPassword.errors.minlength">Current password must be at least 8 characters</div>
+              <div *ngIf="form.controls.currentPassword.errors.maxlength">Current password must be at most 128 characters</div>
+            </div>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="col-12">
+            <mat-label>New Password</mat-label>
+            <input
+              matInput
+              id="profile_password"
+              name="newPassword"
+              minlength="8"
+              maxlength="128"
+              required="required"
+              type="password"
+              formControlName="newPassword"
+              [ngClass]="{ 'is-invalid': (submitted || newPasswordTouched) && form.controls.newPassword.errors }"
+              (blur)="newPasswordTouched = true"
+            >
+            <div *ngIf="(submitted || newPasswordTouched) && form.controls.newPassword.errors" class="invalid-feedback">
+              <div *ngIf="form.controls.newPassword.errors.required">New password is required</div>
+              <div *ngIf="form.controls.newPassword.errors.minlength">New password must be at least 8 characters</div>
+              <div *ngIf="form.controls.newPassword.errors.maxlength">New password must be at most 128 characters</div>
+              <div *ngIf="form.controls.newPassword.errors.uniqueness">New password cannot be the same as the current password</div>
+            </div>
+          </mat-form-field>
+
+          <button
+            mat-raised-button
+            color="primary"
+            class="mr-3 float-right col-md-2 col-6"
+            [disabled]="loading || !form.valid"
+          >
+            Update<mat-icon *ngIf="loading" class="ml-3"><mat-spinner diameter="20"></mat-spinner></mat-icon>
+          </button>
+
+          <a
+            mat-button
+            class="mr-3 float-right col-md-2 col-6"
+            color="accent"
+            routerLinkActive="mat-flat-button"
+            [routerLink]="''"
+          >Back</a>
+
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div> <!-- .row -->
+</div> <!-- .container -->

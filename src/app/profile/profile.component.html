@@ -1,99 +1,11 @@
-<mat-tab-group mat-align-tabs="center" class="h-100" (selectedTabChange)="profileTabsClicked($event)">
+<mat-tab-group mat-align-tabs="center" class="h-100">
   <mat-tab>
     <ng-template mat-tab-label>
       <mat-icon class="example-tab-icon mr-3">account_circle</mat-icon>
       Account Info
     </ng-template>
 
-    <div class="container" *ngIf="user">
-      <div class="row justify-content-md-center">
-        <mat-card class="mt-5 mb-3 col-md-12 col-10">
-          <mat-card-header>
-            <mat-card-title>Profile</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <form [formGroup]="form" (ngSubmit)="updateUser(user)">
-              <mat-form-field appearance="outline" class="col-12 mt-3">
-                <mat-label>Email</mat-label>
-                <input
-                  matInput
-                  disabled
-                  [value]="user.email"
-                >
-              </mat-form-field>
-
-              <mat-form-field appearance="outline" class="col-12">
-                <mat-label>First Name</mat-label>
-                <input
-                  matInput
-                  id="profile_firstName"
-                  name="firstName"
-                  minlength="2"
-                  maxlength="128"
-                  required="required"
-                  formControlName="firstName"
-                  [ngClass]="{ 'is-invalid': (submitted || firstNameTouched) && form.controls.firstName.errors }"
-                  (blur)="firstNameTouched = true"
-                >
-                <div *ngIf="(submitted || firstNameTouched) && form.controls.firstName.errors" class="invalid-feedback">
-                  <div *ngIf="form.controls.firstName.errors.required">First name is required</div>
-                  <div *ngIf="form.controls.firstName.errors.minlength">First name must be at least 2 characters</div>
-                  <div *ngIf="form.controls.firstName.errors.maxlength">First name must be at most 128 characters</div>
-                </div>
-              </mat-form-field>
-
-              <mat-form-field appearance="outline" class="col-12">
-                <mat-label>Last Name</mat-label>
-                <input
-                  matInput
-                  id="profile_lastName"
-                  name="lastName"
-                  minlength="2"
-                  maxlength="128"
-                  required="required"
-                  formControlName="lastName"
-                  [ngClass]="{ 'is-invalid': (submitted || lastNameTouched) && form.controls.lastName.errors }"
-                  (blur)="lastNameTouched = true"
-                >
-                <div *ngIf="(submitted || lastNameTouched) && form.controls.lastName.errors" class="invalid-feedback">
-                  <div *ngIf="form.controls.lastName.errors.required">Last name is required</div>
-                  <div *ngIf="form.controls.lastName.errors.minlength">Last name must be at least 2 characters</div>
-                  <div *ngIf="form.controls.lastName.errors.maxlength">Last name must be at most 128 characters</div>
-                </div>
-              </mat-form-field>
-
-              <mat-checkbox
-                class="col-12 ml-1 mb-5"
-                [disabled]="true"
-                selected
-                labelPosition="before"
-                [checked]="true"
-              >
-                Account Confirmed
-              </mat-checkbox>
-
-              <button
-                mat-raised-button
-                color="primary"
-                class="mr-3 float-right col-md-2 col-6"
-                [disabled]="loading || !dataChanged"
-              >
-                Update<mat-icon *ngIf="loading" class="ml-3"><mat-spinner diameter="20"></mat-spinner></mat-icon>
-              </button>
-
-              <a
-                mat-button
-                class="mr-3 float-right col-md-2 col-6"
-                color="accent"
-                routerLinkActive="mat-flat-button"
-                [routerLink]="''"
-              >Back</a>
-
-            </form>
-          </mat-card-content>
-        </mat-card>
-      </div>
-    </div>
+    <app-profile-user-info></app-profile-user-info>
   </mat-tab>
 
   <mat-tab>
@@ -101,6 +13,8 @@
       <mat-icon class="example-tab-icon mr-3">security</mat-icon>
       Security
     </ng-template>
+
+    <app-profile-security></app-profile-security>
   </mat-tab>
 
   <mat-tab>
@@ -109,90 +23,6 @@
       Login History
     </ng-template>
 
-    <div class="container" *ngIf="loginActivity">
-      <div class="row justify-content-md-center">
-        <mat-card class="mt-5 mb-3 col-md-12 col-10">
-          <mat-card-header>
-            <mat-card-title>Login History</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <table mat-table [dataSource]="loginActivity.edges" *ngIf="loginActivity" class="mat-elevation-z8 w-100 mt-3 mb-3" multiTemplateDataRows>
-
-              <!-- IP Address Column -->
-              <ng-container matColumnDef="ip">
-                <th mat-header-cell *matHeaderCellDef> IP Address </th>
-                <td mat-cell *matCellDef="let element"> {{element.node.ip}} </td>
-              </ng-container>
-
-              <!-- Success Column -->
-              <ng-container matColumnDef="success">
-                <th mat-header-cell *matHeaderCellDef> Successful </th>
-                <td mat-cell *matCellDef="let element"> {{element.node.success}} </td>
-              </ng-container>
-
-              <!-- Created At Column -->
-              <ng-container matColumnDef="timestamp">
-                <th mat-header-cell *matHeaderCellDef> Timestamp </th>
-                <td mat-cell *matCellDef="let element"> {{element.node.createdAt | date:'MMM d, y, h:mm a'}} </td>
-              </ng-container>
-
-              <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
-              <ng-container matColumnDef="expandedDetail">
-                <td mat-cell *matCellDef="let element" [attr.colspan]="displayedColumns.length">
-                  <div class="login-activity-detail"
-                       [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
-                    <div class="container pr-0 pl-0">
-                      <div class="row mb-2">
-                        <div class="col-md-2 font-weight-bold">Identity:</div>
-                        <div class="col-md-10">{{element.node.identity}}</div>
-                      </div>
-
-                      <div class="row mb-2">
-                        <div class="col-md-2 font-weight-bold">User Agent:</div>
-                        <div class="col-md-10">{{element.node.userAgent}}</div>
-                      </div>
-
-                      <div class="row mb-2" *ngIf="element.node.failureReason">
-                        <div class="col-md-2 font-weight-bold">Failure Reason:</div>
-                        <div class="col-md-10">{{element.node.failureReason}}</div>
-                      </div>
-
-                      <div class="row mb-2" *ngIf="element.node.city">
-                        <div class="col-md-2 font-weight-bold">City:</div>
-                        <div class="col-md-10">{{element.node.city}}</div>
-                      </div>
-
-                      <div class="row mb-2" *ngIf="element.node.region">
-                        <div class="col-md-2 font-weight-bold">Region:</div>
-                        <div class="col-md-10">{{element.node.region}}</div>
-                      </div>
-
-                      <div class="row mb-2" *ngIf="element.node.country">
-                        <div class="col-md-2 font-weight-bold">Country:</div>
-                        <div class="col-md-10">{{element.node.country}}</div>
-                      </div>
-                    </div>
-                  </div>
-                </td>
-              </ng-container>
-
-              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-              <tr mat-row *matRowDef="let element; columns: displayedColumns;"
-                  class="login-activity-row"
-                  [class.login-activity-expanded-row]="expandedElement === element"
-                  (click)="expandedElement = expandedElement === element ? null : element">
-              </tr>
-              <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="login-activity-detail-row"></tr>
-            </table>
-
-            <mat-paginator [length]="loginActivity.totalCount"
-                           [pageSize]="pageSize"
-                           [pageSizeOptions]="[5, 10, 25, 100]"
-                           (page)="pageEvent($event)">
-            </mat-paginator>
-          </mat-card-content>
-        </mat-card>
-      </div>
-    </div>
+    <app-profile-login-activity></app-profile-login-activity>
   </mat-tab>
 </mat-tab-group>

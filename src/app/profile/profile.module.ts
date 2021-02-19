@@ -9,14 +9,18 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 
 import { ProfileRoutingModule } from './profile-routing.module';
 import { ProfileComponent } from './profile.component';
+import { ProfileUserInfoComponent } from '../profile-user-info/profile-user-info.component';
+import { ProfileLoginActivityComponent } from '../profile-login-activity/profile-login-activity.component';
+import { ProfileSecurityComponent } from '../profile-security/profile-security.component';
 
 @NgModule({
-  declarations: [ProfileComponent],
+  declarations: [ProfileComponent, ProfileUserInfoComponent, ProfileLoginActivityComponent, ProfileSecurityComponent],
   imports: [
     CommonModule,
     MatButtonModule,
@@ -27,6 +31,7 @@ import { ProfileComponent } from './profile.component';
     MatInputModule,
     MatPaginatorModule,
     MatProgressSpinnerModule,
+    MatSnackBarModule,
     MatTableModule,
     MatTabsModule,
     ProfileRoutingModule,
