@@ -5,10 +5,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { ApolloTestingController, ApolloTestingModule } from 'apollo-angular/testing';
 import { GraphQLError } from 'graphql';
-import { authTokenFactory } from 'src/app/factories/auth-token';
-import { AuthToken } from 'src/app/models/auth-token';
 import { User } from 'src/app/models/user';
-import { AuthService } from 'src/app/services/auth.service';
 
 import * as faker from 'faker';
 import { UserService } from 'src/app/services/user.service';
@@ -19,21 +16,19 @@ describe('DashboardComponent', () => {
   let component: DashboardComponent;
   let fixture: ComponentFixture<DashboardComponent>;
   let apolloController: ApolloTestingController;
-  let authService: AuthService;
   let userService: UserService;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [DashboardComponent],
       imports: [ApolloTestingModule, HttpClientTestingModule, MatCardModule, MatIconModule],
-      providers: [AuthService, UserService]
+      providers: [UserService]
     }).compileComponents();
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(DashboardComponent);
     apolloController = TestBed.inject(ApolloTestingController);
-    authService = TestBed.inject(AuthService);
     userService = TestBed.inject(UserService);
 
     component = fixture.componentInstance;
@@ -50,8 +45,6 @@ describe('DashboardComponent', () => {
   it('loads basic user info', () => {
     const firstName: string = faker.name.firstName();
     const lastName: string = faker.name.lastName();
-    const authToken: AuthToken = authTokenFactory.build();
-    jest.spyOn(authService, 'authTokenValue', 'get').mockReturnValue(authToken);
 
     component.ngOnInit();
 
@@ -61,7 +54,6 @@ describe('DashboardComponent', () => {
     });
 
     const request = apolloController.expectOne(GET_BASIC_USER_INFO);
-    expect(request.operation.variables.id).toEqual('user1');
 
     // Respond with mock data, causing Observable to resolve.
     request.flush({
@@ -79,8 +71,6 @@ describe('DashboardComponent', () => {
   it('stores the fetched user data in the user service', () => {
     const firstName: string = faker.name.firstName();
     const lastName: string = faker.name.lastName();
-    const authToken: AuthToken = authTokenFactory.build();
-    jest.spyOn(authService, 'authTokenValue', 'get').mockReturnValue(authToken);
 
     component.ngOnInit();
 
@@ -91,7 +81,6 @@ describe('DashboardComponent', () => {
     });
 
     const request = apolloController.expectOne(GET_BASIC_USER_INFO);
-    expect(request.operation.variables.id).toEqual('user1');
 
     // Respond with mock data, causing Observable to resolve.
     request.flush({
@@ -106,9 +95,7 @@ describe('DashboardComponent', () => {
     });
   });
 
-  it('fails to load user info if access token does not contain user ID', () => {
-    jest.spyOn(authService, 'authTokenValue', 'get').mockReturnValue(null);
-
+  it('fails to load user info if an error is returned', () => {
     component.ngOnInit();
 
     component.user$.subscribe(
@@ -121,8 +108,6 @@ describe('DashboardComponent', () => {
     );
 
     const request = apolloController.expectOne(GET_BASIC_USER_INFO);
-    expect(request.operation.variables.id).toEqual(undefined);
-
     request.graphqlErrors([new GraphQLError('Error making request')]);
   });
 });

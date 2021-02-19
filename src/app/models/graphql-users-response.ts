@@ -26,3 +26,14 @@ interface GraphqlUpdateUserResponseObject {
     user: User | null;
   };
 }
+
+export interface GraphqlChangePasswordResponse {
+  data: GraphqlChangePasswordResponseObject;
+}
+
+interface GraphqlChangePasswordResponseObject {
+  changePassword: {
+    errors: Array<string>;
+    user: User | null;
+  };
+}

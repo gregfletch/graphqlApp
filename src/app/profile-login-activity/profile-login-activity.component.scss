@@ -1,0 +1,20 @@
+.login-activity-detail {
+  display: flex;
+  overflow: hidden;
+}
+
+.login-activity-detail-row {
+  height: 0;
+}
+
+.login-activity-row:not(.login-activity-expanded-row):hover {
+  background: #f5f5f5;
+}
+
+.login-activity-row:not(.login-activity-expanded-row):active {
+  background: #efefef;
+}
+
+.login-activity-row td {
+  border-bottom-width: 0;
+}
