@@ -100,7 +100,7 @@ export class AuthService {
     );
   }
 
-  pkceAuthToken(email: string): Observable<AuthToken> {
+  pkceAuthToken(email: string, sessionId: string): Observable<AuthToken> {
     const pkceChallenge: PkceChallenge = AuthService.pkceChallenge(128);
     const httpParams: HttpParams = new HttpParams({
       fromObject: {
@@ -110,7 +110,8 @@ export class AuthService {
         scope: 'api:graphql',
         code_challenge_method: 'plain',
         code_challenge: pkceChallenge.challenge,
-        email: email
+        email: email,
+        session_id: sessionId
       }
     });
 

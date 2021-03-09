@@ -7,6 +7,7 @@ interface AuthResponseResult {
   message: string;
   user: {
     id: string;
+    session_id: string;
   };
 }
 
