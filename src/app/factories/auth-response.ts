@@ -6,7 +6,8 @@ export const authResponseFactory = Factory.define<AuthResponse>(({ sequence }) =
   result: {
     message: 'Success',
     user: {
-      id: sequence.toString()
+      id: sequence.toString(),
+      session_id: sequence.toString()
     }
   }
 }));

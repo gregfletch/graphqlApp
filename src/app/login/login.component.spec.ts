@@ -242,9 +242,10 @@ describe('LoginComponent', () => {
       const authResponse: AuthResponse = authResponseFactory.build();
       const email: string = faker.internet.email();
       let authTokenRequestSpy: jasmine.Spy;
+      let authServiceLoginSpy: jasmine.Spy;
 
       beforeEach(() => {
-        spyOn(authService, 'login').and.returnValue(of(authResponse));
+        authServiceLoginSpy = spyOn(authService, 'login').and.returnValue(of(authResponse));
         authTokenRequestSpy = spyOn(authService, 'pkceAuthToken');
 
         component.form.setValue({ username: email, password: faker.internet.password(8) });
@@ -254,7 +255,16 @@ describe('LoginComponent', () => {
         component.login();
 
         expect(authService.pkceAuthToken).toHaveBeenCalledTimes(1);
-        expect(authService.pkceAuthToken).toHaveBeenCalledWith(email);
+        expect(authService.pkceAuthToken).toHaveBeenCalledWith(email, authResponse.result?.user.session_id);
+      });
+
+      it('requests an auth token after successful login - no result object in authResponse', () => {
+        const authResponseNoResult: AuthResponse = { errors: [] };
+        authServiceLoginSpy.and.returnValue(of(authResponseNoResult));
+        component.login();
+
+        expect(authService.pkceAuthToken).toHaveBeenCalledTimes(1);
+        expect(authService.pkceAuthToken).toHaveBeenCalledWith(email, '');
       });
 
       it('redirects to dashboard on successful login and auth token retrieved', () => {

@@ -73,8 +73,8 @@ export class LoginComponent implements OnDestroy, OnInit {
           }
         ),
         mergeMap(
-          (_response: AuthResponse, _index: number): ObservableInput<AuthToken> => {
-            return this.authService.pkceAuthToken(this.form.controls.username.value);
+          (response: AuthResponse, _index: number): ObservableInput<AuthToken> => {
+            return this.authService.pkceAuthToken(this.form.controls.username.value, response.result?.user.session_id || '');
           }
         )
       )
