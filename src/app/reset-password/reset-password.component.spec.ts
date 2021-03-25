@@ -80,7 +80,7 @@ describe('ResetPasswordComponent', () => {
 
     it('is valid if all required fields are filled', () => {
       component.form.setValue({
-        username: faker.internet.email(),
+        username: faker.internet.email()
       });
       expect(component.form.valid).toBeTruthy();
     });

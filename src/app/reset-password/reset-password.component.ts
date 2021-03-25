@@ -44,7 +44,7 @@ export class ResetPasswordComponent implements OnDestroy, OnInit {
   submitted = false;
   usernameTouched = false;
   form!: FormGroup;
-  resetToken: string = '';
+  resetToken = '';
 
   private destroyed$: Subject<void> = new Subject();
 

@@ -24,6 +24,7 @@ import { ResetPasswordComponent } from './reset-password.component';
     MatProgressSpinnerModule,
     MatSnackBarModule,
     ReactiveFormsModule,
-    ResetPasswordRoutingModule]
+    ResetPasswordRoutingModule
+  ]
 })
 export class ResetPasswordModule {}
