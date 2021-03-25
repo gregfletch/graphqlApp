@@ -37,3 +37,14 @@ interface GraphqlChangePasswordResponseObject {
     user: User | null;
   };
 }
+
+export interface GraphqlResetPasswordResponse {
+  data: GraphqlResetPasswordResponseObject;
+}
+
+interface GraphqlResetPasswordResponseObject {
+  resetPassword: {
+    errors: Array<string>;
+    user: User | null;
+  };
+}

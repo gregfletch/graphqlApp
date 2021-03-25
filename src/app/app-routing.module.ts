@@ -10,6 +10,7 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent, canActivate: [UserGuard] },
   { path: 'profile', loadChildren: () => import('./profile/profile.module').then((m) => m.ProfileModule) },
   { path: 'register', loadChildren: () => import('./register/register.module').then((m) => m.RegisterModule) },
+  { path: 'reset', loadChildren: () => import('./reset-password/reset-password.module').then((m) => m.ResetPasswordModule) },
   { path: '**', redirectTo: '' }
 ];
 
