@@ -90,8 +90,7 @@ export class ProfileSecurityComponent implements OnDestroy, OnInit {
           }
           this.loading = false;
         },
-        (error: HttpErrorResponse) => {
-          console.log('there was an error sending the query', error);
+        (_error: HttpErrorResponse) => {
           this.loading = false;
 
           this.snackBar.openFromComponent(ErrorSnackbarComponent, {

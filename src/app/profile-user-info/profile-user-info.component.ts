@@ -6,6 +6,7 @@ import { ApolloQueryResult, FetchResult } from '@apollo/client/core';
 import { Apollo } from 'apollo-angular';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { ErrorSnackbarComponent } from 'src/app/error-snackbar/error-snackbar.component';
 import { GraphqlUpdateUserResponse, GraphqlUserResponse } from 'src/app/models/graphql-users-response';
 import { ProfileForm } from 'src/app/models/profile-form';
 import { User } from 'src/app/models/user';
@@ -91,14 +92,13 @@ export class ProfileUserInfoComponent implements OnDestroy, OnInit {
           }
           this.loading = false;
         },
-        (error: HttpErrorResponse) => {
-          console.log('there was an error sending the query', error);
+        (_error: HttpErrorResponse) => {
           this.loading = false;
 
-          // this.snackBar.openFromComponent(SuccessSnackbarComponent, {
-          //   data: 'Error sending request. Please try again.',
-          //   duration: 3500
-          // });
+          this.snackBar.openFromComponent(ErrorSnackbarComponent, {
+            data: 'Error sending request. Please try again.',
+            duration: 3500
+          });
         }
       );
   }

@@ -2,13 +2,15 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FetchResult, gql } from '@apollo/client/core';
 import { Apollo } from 'apollo-angular';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { EMPTY, ObservableInput, Subject } from 'rxjs';
+import { mergeMap, takeUntil } from 'rxjs/operators';
 import { ErrorSnackbarComponent } from 'src/app/error-snackbar/error-snackbar.component';
+import { AuthToken } from 'src/app/models/auth-token';
 import { GraphqlResetPasswordResponse } from 'src/app/models/graphql-users-response';
+import { AuthService } from 'src/app/services/auth.service';
 import { SuccessSnackbarComponent } from 'src/app/success-snackbar/success-snackbar.component';
 
 export const INITIATE_RESET_PASSWORD_MUTATION = gql`
@@ -43,15 +45,23 @@ export class ResetPasswordComponent implements OnDestroy, OnInit {
   loading = false;
   submitted = false;
   usernameTouched = false;
+  passwordTouched = false;
   form!: FormGroup;
   resetToken = '';
 
   private destroyed$: Subject<void> = new Subject();
 
-  constructor(private route: ActivatedRoute, private apollo: Apollo, private formBuilder: FormBuilder, private snackBar: MatSnackBar) {}
+  constructor(
+    private route: ActivatedRoute,
+    private apollo: Apollo,
+    private authService: AuthService,
+    private formBuilder: FormBuilder,
+    private snackBar: MatSnackBar,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
-    this.form = this.formBuilder.group({ username: ['', Validators.required] });
+    this.form = this.formBuilder.group({ username: ['', Validators.required], password: ['', Validators.required] });
 
     this.resetToken = this.route.snapshot.queryParams['resetToken'] || '';
   }
@@ -61,18 +71,23 @@ export class ResetPasswordComponent implements OnDestroy, OnInit {
     this.destroyed$.complete();
   }
 
-  initiateResetPassword(): void {
-    console.log('RESET PASSWORD!!');
+  submitResetForm(): void {
+    if (this.resetToken) {
+      this.resetPassword();
+    } else {
+      this.initiateResetPassword();
+    }
+  }
 
+  initiateResetPassword(): void {
     this.submitted = true;
-    const email: string = this.form.controls.username.value;
 
     this.loading = true;
     this.apollo
       .mutate({
         mutation: INITIATE_RESET_PASSWORD_MUTATION,
         variables: {
-          email: email
+          email: this.form.controls.username.value
         }
       })
       .pipe(takeUntil(this.destroyed$))
@@ -92,8 +107,57 @@ export class ResetPasswordComponent implements OnDestroy, OnInit {
           }
           this.loading = false;
         },
-        (error: HttpErrorResponse) => {
-          console.log('there was an error sending the query', error);
+        (_error: HttpErrorResponse) => {
+          this.loading = false;
+
+          this.snackBar.openFromComponent(ErrorSnackbarComponent, {
+            data: 'Error sending request. Please try again.',
+            duration: 3500
+          });
+        }
+      );
+  }
+
+  resetPassword(): void {
+    this.submitted = true;
+
+    this.loading = true;
+    this.apollo
+      .mutate({
+        mutation: RESET_PASSWORD_MUTATION,
+        variables: {
+          password: this.form.controls.password.value,
+          resetToken: this.resetToken
+        }
+      })
+      .pipe(
+        takeUntil(this.destroyed$),
+        mergeMap(
+          (mutationResult: FetchResult<unknown>, _index: number): ObservableInput<AuthToken> => {
+            const result: GraphqlResetPasswordResponse = mutationResult as GraphqlResetPasswordResponse;
+            if (result.data.resetPassword.errors.length > 0) {
+              this.snackBar.openFromComponent(ErrorSnackbarComponent, {
+                data: result.data.resetPassword.errors[0],
+                duration: 3500
+              });
+            } else {
+              this.snackBar.openFromComponent(SuccessSnackbarComponent, {
+                data: 'Successfully reset password',
+                duration: 3500
+              });
+            }
+
+            const sessionId = result.data.resetPassword.user?.sessionId || '';
+            return sessionId ? this.authService.pkceAuthToken('', sessionId) : EMPTY;
+          }
+        )
+      )
+      .subscribe(
+        (_authTokenResponse: AuthToken) => {
+          this.router.navigate(['/']);
+          this.loading = false;
+        },
+        (_error: HttpErrorResponse) => {
           this.loading = false;
 
           this.snackBar.openFromComponent(ErrorSnackbarComponent, {

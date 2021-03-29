@@ -48,3 +48,14 @@ interface GraphqlResetPasswordResponseObject {
     user: User | null;
   };
 }
+
+export interface GraphqlUnlockPasswordResponse {
+  data: GraphqlUnlockPasswordResponseObject;
+}
+
+interface GraphqlUnlockPasswordResponseObject {
+  unlockPassword: {
+    errors: Array<string>;
+    user: User | null;
+  };
+}

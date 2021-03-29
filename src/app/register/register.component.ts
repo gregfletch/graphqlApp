@@ -52,8 +52,7 @@ export class RegisterComponent implements OnDestroy, OnInit {
       .register(this.form.controls.firstName.value, this.form.controls.lastName.value, this.form.controls.username.value, this.form.controls.password.value)
       .pipe(takeUntil(this.destroyed$))
       .subscribe(
-        (data: RestResponse) => {
-          console.log('DATA = ', data);
+        (_data: RestResponse) => {
           this.router.navigate(['']);
         },
         (error: HttpErrorResponse) => {
