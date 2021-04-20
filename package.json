@@ -41,7 +41,7 @@
     "@angular-devkit/core": "^11.2.9",
     "@angular/cli": "^11.2.9",
     "@angular/compiler-cli": "^11.2.10",
-    "@types/faker": "^5.5.2",
+    "@types/faker": "^5.5.3",
     "@types/jest": "^26.0.22",
     "@types/node": "^14.14.41",
     "@typescript-eslint/eslint-plugin": "^4.22.0",
