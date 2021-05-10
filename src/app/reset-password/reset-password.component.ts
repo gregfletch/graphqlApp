@@ -132,25 +132,23 @@ export class ResetPasswordComponent implements OnDestroy, OnInit {
       })
       .pipe(
         takeUntil(this.destroyed$),
-        mergeMap(
-          (mutationResult: FetchResult<unknown>, _index: number): ObservableInput<AuthToken> => {
-            const result: GraphqlResetPasswordResponse = mutationResult as GraphqlResetPasswordResponse;
-            if (result.data.resetPassword.errors.length > 0) {
-              this.snackBar.openFromComponent(ErrorSnackbarComponent, {
-                data: result.data.resetPassword.errors[0],
-                duration: 3500
-              });
-            } else {
-              this.snackBar.openFromComponent(SuccessSnackbarComponent, {
-                data: 'Successfully reset password',
-                duration: 3500
-              });
-            }
-
-            const sessionId = result.data.resetPassword.user?.sessionId || '';
-            return sessionId ? this.authService.pkceAuthToken('', sessionId) : EMPTY;
+        mergeMap((mutationResult: FetchResult<unknown>, _index: number): ObservableInput<AuthToken> => {
+          const result: GraphqlResetPasswordResponse = mutationResult as GraphqlResetPasswordResponse;
+          if (result.data.resetPassword.errors.length > 0) {
+            this.snackBar.openFromComponent(ErrorSnackbarComponent, {
+              data: result.data.resetPassword.errors[0],
+              duration: 3500
+            });
+          } else {
+            this.snackBar.openFromComponent(SuccessSnackbarComponent, {
+              data: 'Successfully reset password',
+              duration: 3500
+            });
           }
-        )
+
+          const sessionId = result.data.resetPassword.user?.sessionId || '';
+          return sessionId ? this.authService.pkceAuthToken('', sessionId) : EMPTY;
+        })
       )
       .subscribe(
         (_authTokenResponse: AuthToken) => {

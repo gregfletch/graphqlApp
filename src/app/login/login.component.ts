@@ -66,17 +66,13 @@ export class LoginComponent implements OnDestroy, OnInit {
     this.authService
       .login(this.form.controls.username.value, this.form.controls.password.value)
       .pipe(
-        catchError(
-          (error: HttpErrorResponse, _caught: Observable<AuthResponse>): ObservableInput<AuthResponse> => {
-            console.log('ERROR ON LOGIN', error);
-            return throwError(error);
-          }
-        ),
-        mergeMap(
-          (response: AuthResponse, _index: number): ObservableInput<AuthToken> => {
-            return this.authService.pkceAuthToken(this.form.controls.username.value, response.result?.user.session_id || '');
-          }
-        )
+        catchError((error: HttpErrorResponse, _caught: Observable<AuthResponse>): ObservableInput<AuthResponse> => {
+          console.log('ERROR ON LOGIN', error);
+          return throwError(error);
+        }),
+        mergeMap((response: AuthResponse, _index: number): ObservableInput<AuthToken> => {
+          return this.authService.pkceAuthToken(this.form.controls.username.value, response.result?.user.session_id || '');
+        })
       )
       .subscribe(
         (_authTokenResponse: AuthToken) => {
