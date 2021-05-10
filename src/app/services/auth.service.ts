@@ -170,15 +170,13 @@ export class AuthService {
     const headers: HttpHeaders = AuthService.setDefaultHeaders();
     const httpParams: HttpParams = new HttpParams({ fromObject: params });
 
-    return this.httpClient
-      .post<AuthToken>(this.POST_OAUTH_TOKEN_PATH, httpParams, { headers: headers })
-      .pipe(
-        map((token: AuthToken) => {
-          localStorage.setItem(this.AUTH_TOKEN_LOCAL_STORAGE_KEY, btoa(JSON.stringify(token)));
-          this.authTokenSubject.next(token);
+    return this.httpClient.post<AuthToken>(this.POST_OAUTH_TOKEN_PATH, httpParams, { headers: headers }).pipe(
+      map((token: AuthToken) => {
+        localStorage.setItem(this.AUTH_TOKEN_LOCAL_STORAGE_KEY, btoa(JSON.stringify(token)));
+        this.authTokenSubject.next(token);
 
-          return token;
-        })
-      );
+        return token;
+      })
+    );
   }
 }
