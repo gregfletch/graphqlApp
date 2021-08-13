@@ -52,15 +52,15 @@
           <button
             mat-raised-button
             color="primary"
-            class="mr-3 float-right col-md-2 col-6"
+            class="me-3 float-end col-md-2 col-6"
             [disabled]="loading || !form.valid"
           >
-            Update<mat-icon *ngIf="loading" class="ml-3"><mat-spinner diameter="20"></mat-spinner></mat-icon>
+            Update<mat-icon *ngIf="loading" class="ms-3"><mat-spinner diameter="20"></mat-spinner></mat-icon>
           </button>
 
           <a
             mat-button
-            class="mr-3 float-right col-md-2 col-6"
+            class="me-3 float-end col-md-2 col-6"
             color="accent"
             routerLinkActive="mat-flat-button"
             [routerLink]="''"
