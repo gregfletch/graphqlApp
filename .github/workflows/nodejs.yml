@@ -34,9 +34,9 @@ jobs:
       - name: Yarn Install
         run: yarn install
       - name: Stylelint
-        run: npm run stylelint
+        run: yarn run stylelint
       - name: Lint
-        run: npm run lint
+        run: yarn run lint
       - name: Audit
         run: yarn npm audit -A -R
 
@@ -69,10 +69,10 @@ jobs:
         run: yarn install
 
       - name: Build
-        run: npm run build
+        run: yarn run build
 
       - name: Run Tests
-        run: npm run test
+        run: yarn run test
 
       - name: Upload Coverage Report
-        run: npm run codecov
+        run: yarn run codecov
