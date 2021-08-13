@@ -11,5 +11,7 @@ module.exports = {
   coverageDirectory: 'coverage/graphqlApp',
   moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths || {}, {
     prefix: '<rootDir>/'
-  })
+  }),
+  modulePaths: ['<rootDir>'],
+  testRunner: 'jest-jasmine2'
 };
