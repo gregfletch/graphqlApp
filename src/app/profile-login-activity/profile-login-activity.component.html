@@ -30,34 +30,34 @@
             <td mat-cell *matCellDef="let element" [attr.colspan]="displayedColumns.length">
               <div class="login-activity-detail"
                    [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
-                <div class="container pr-0 pl-0">
+                <div class="container pe-0 ps-0">
                   <div class="row mb-2">
-                    <div class="col-md-2 font-weight-bold">Identity:</div>
+                    <div class="col-md-2 fw-bold">Identity:</div>
                     <div class="col-md-10">{{element.node.identity}}</div>
                   </div>
 
                   <div class="row mb-2">
-                    <div class="col-md-2 font-weight-bold">User Agent:</div>
+                    <div class="col-md-2 fw-bold">User Agent:</div>
                     <div class="col-md-10">{{element.node.userAgent}}</div>
                   </div>
 
                   <div class="row mb-2" *ngIf="element.node.failureReason">
-                    <div class="col-md-2 font-weight-bold">Failure Reason:</div>
+                    <div class="col-md-2 fw-bold">Failure Reason:</div>
                     <div class="col-md-10">{{element.node.failureReason}}</div>
                   </div>
 
                   <div class="row mb-2" *ngIf="element.node.city">
-                    <div class="col-md-2 font-weight-bold">City:</div>
+                    <div class="col-md-2 fw-bold">City:</div>
                     <div class="col-md-10">{{element.node.city}}</div>
                   </div>
 
                   <div class="row mb-2" *ngIf="element.node.region">
-                    <div class="col-md-2 font-weight-bold">Region:</div>
+                    <div class="col-md-2 fw-bold">Region:</div>
                     <div class="col-md-10">{{element.node.region}}</div>
                   </div>
 
                   <div class="row mb-2" *ngIf="element.node.country">
-                    <div class="col-md-2 font-weight-bold">Country:</div>
+                    <div class="col-md-2 fw-bold">Country:</div>
                     <div class="col-md-10">{{element.node.country}}</div>
                   </div>
                 </div>
