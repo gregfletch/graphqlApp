@@ -38,7 +38,7 @@ jobs:
       - name: Lint
         run: npm run lint
       - name: Audit
-        run: yarn audit
+        run: yarn npm audit -A -R
 
   test:
     name: Unit Tests

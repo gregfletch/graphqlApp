@@ -48,3 +48,12 @@ testem.log
 Thumbs.db
 
 spectaql.yml
+
+# Yarn2 files
+.yarn/*
+!.yarn/patches
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
