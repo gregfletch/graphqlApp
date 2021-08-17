@@ -2,7 +2,7 @@
   "name": "graphql-app",
   "version": "0.1.0",
   "scripts": {
-    "audit": "yarn audit",
+    "audit": "yarn npm audit -A -R",
     "build": "ng build",
     "build:watch": "ng build --watch=true",
     "codecov": "./node_modules/.bin/codecov",
@@ -28,7 +28,7 @@
     "@angular/platform-browser": "^12.2.1",
     "@angular/platform-browser-dynamic": "^12.2.1",
     "@angular/router": "^12.2.1",
-    "@apollo/client": "^3.4.7",
+    "@apollo/client": "^3.4.8",
     "@popperjs/core": "^2.9.3",
     "apollo-angular": "^2.6.0",
     "bootstrap": "^5.1.0",
@@ -46,8 +46,8 @@
     "@types/faker": "^5.5.8",
     "@types/jest": "^27.0.1",
     "@types/node": "^16.6.1",
-    "@typescript-eslint/eslint-plugin": "^4.29.1",
-    "@typescript-eslint/parser": "^4.29.1",
+    "@typescript-eslint/eslint-plugin": "^4.29.2",
+    "@typescript-eslint/parser": "^4.29.2",
     "codecov": "^3.8.3",
     "codelyzer": "^6.0.2",
     "eslint": "^7.32.0",
@@ -66,7 +66,6 @@
     "stylelint": "^13.13.1",
     "stylelint-config-sass-guidelines": "^8.0.0",
     "ts-node": "^10.2.0",
-    "tslint": "^6.1.3",
     "typescript": "~4.3.5"
   }
 }
