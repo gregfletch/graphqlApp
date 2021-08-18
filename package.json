@@ -60,7 +60,7 @@
     "jasmine-core": "^3.8.0",
     "jest": "^27.0.6",
     "jest-jasmine2": "^27.0.6",
-    "jest-preset-angular": "^9.0.5",
+    "jest-preset-angular": "^9.0.6",
     "prettier": "^2.3.2",
     "prettier-eslint": "^13.0.0",
     "stylelint": "^13.13.1",
