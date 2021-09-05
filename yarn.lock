@@ -397,9 +397,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apollo/client@npm:^3.4.10":
-  version: 3.4.10
-  resolution: "@apollo/client@npm:3.4.10"
+"@apollo/client@npm:^3.5.0-beta.11":
+  version: 3.5.0-beta.11
+  resolution: "@apollo/client@npm:3.5.0-beta.11"
   dependencies:
     "@graphql-typed-document-node/core": ^3.0.0
     "@wry/context": ^0.6.0
@@ -412,7 +412,7 @@ __metadata:
     symbol-observable: ^4.0.0
     ts-invariant: ^0.9.0
     tslib: ^2.3.0
-    zen-observable-ts: ^1.1.0
+    zen-observable-ts: ^1.2.0
   peerDependencies:
     graphql: ^14.0.0 || ^15.0.0
     react: ^16.8.0 || ^17.0.0
@@ -422,7 +422,7 @@ __metadata:
       optional: true
     subscriptions-transport-ws:
       optional: true
-  checksum: 2d8a943b082558a43439d9801e868a690f2db1f3f4beccbde04b7b9cda81babc58332fb70eb9a919af2c758c460468da4c8967b101c81898891cbe2ee4b7d92f
+  checksum: 9eb2bb1e6726663602b290d217f637db6850a5834f501812101b01c4d51aec65495ec5625d8d3c429b613844711f96d9dbe2a05ecb9d03d340caf510004b607e
   languageName: node
   linkType: hard
 
@@ -6606,7 +6606,7 @@ fsevents@^1.2.7:
     "@angular/platform-browser": ^12.2.4
     "@angular/platform-browser-dynamic": ^12.2.4
     "@angular/router": ^12.2.4
-    "@apollo/client": ^3.4.10
+    "@apollo/client": ^3.5.0-beta.11
     "@popperjs/core": ^2.10.1
     "@types/faker": ^5.5.8
     "@types/jest": ^27.0.1
@@ -14480,7 +14480,7 @@ typescript@^3.9.3:
   languageName: node
   linkType: hard
 
-"zen-observable-ts@npm:^1.1.0":
+"zen-observable-ts@npm:^1.2.0":
   version: 1.2.2
   resolution: "zen-observable-ts@npm:1.2.2"
   dependencies:
