@@ -10,9 +10,9 @@
     "ecmaVersion": 2020, // Allows for the parsing of modern ECMAScript features
     "sourceType": "module" // Allows for the use of imports
   },
+  "plugins": ["@typescript-eslint"],
   "rules": {
     "max-len": ["error", { "code": 160, "tabWidth": 2, "ignoreTrailingComments": true }],
-    "@typescript-eslint/no-unused-vars": "off",
-    "@typescript-eslint/no-unused-vars-experimental": "error"
+    "@typescript-eslint/no-unused-vars": "off"
   }
 }

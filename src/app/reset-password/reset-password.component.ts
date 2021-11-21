@@ -91,8 +91,8 @@ export class ResetPasswordComponent implements OnDestroy, OnInit {
         }
       })
       .pipe(takeUntil(this.destroyed$))
-      .subscribe(
-        (mutationResult: FetchResult<unknown>) => {
+      .subscribe({
+        next: (mutationResult: FetchResult<unknown>) => {
           const result: GraphqlResetPasswordResponse = mutationResult as GraphqlResetPasswordResponse;
           if (result.data.resetPassword.errors.length > 0) {
             this.snackBar.openFromComponent(ErrorSnackbarComponent, {
@@ -107,7 +107,7 @@ export class ResetPasswordComponent implements OnDestroy, OnInit {
           }
           this.loading = false;
         },
-        (_error: HttpErrorResponse) => {
+        error: (_error: HttpErrorResponse) => {
           this.loading = false;
 
           this.snackBar.openFromComponent(ErrorSnackbarComponent, {
@@ -115,7 +115,7 @@ export class ResetPasswordComponent implements OnDestroy, OnInit {
             duration: 3500
           });
         }
-      );
+      });
   }
 
   resetPassword(): void {
@@ -150,12 +150,12 @@ export class ResetPasswordComponent implements OnDestroy, OnInit {
           return sessionId ? this.authService.pkceAuthToken('', sessionId) : EMPTY;
         })
       )
-      .subscribe(
-        (_authTokenResponse: AuthToken) => {
+      .subscribe({
+        next: (_authTokenResponse: AuthToken) => {
           this.router.navigate(['/']);
           this.loading = false;
         },
-        (_error: HttpErrorResponse) => {
+        error: (_error: HttpErrorResponse) => {
           this.loading = false;
 
           this.snackBar.openFromComponent(ErrorSnackbarComponent, {
@@ -163,6 +163,6 @@ export class ResetPasswordComponent implements OnDestroy, OnInit {
             duration: 3500
           });
         }
-      );
+      });
   }
 }
