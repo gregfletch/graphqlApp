@@ -70,6 +70,9 @@ jobs:
       - name: Yarn Install
         run: yarn install
 
+      - name: Compile
+        run: yarn run ngcc
+
       - name: Build
         run: yarn run build
 
