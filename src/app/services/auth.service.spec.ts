@@ -157,7 +157,7 @@ describe('AuthService', () => {
     });
 
     it('calls /oauth/token if call to oauth/authorize is successful', () => {
-      service.pkceAuthToken(faker.internet.email(), faker.random.uuid()).subscribe();
+      service.pkceAuthToken(faker.internet.email(), faker.datatype.uuid()).subscribe();
 
       const req = httpTestingController.expectOne(`${environment.idp_base_url}/oauth/authorize`);
       expect(req.request.method).toEqual('POST');
@@ -167,7 +167,7 @@ describe('AuthService', () => {
     });
 
     it('does not call /oauth/token if authorization call fails', () => {
-      service.pkceAuthToken(faker.internet.email(), faker.random.uuid()).subscribe(
+      service.pkceAuthToken(faker.internet.email(), faker.datatype.uuid()).subscribe(
         (_response: AuthToken) => {
           fail('Unexpected success');
         },
@@ -185,7 +185,7 @@ describe('AuthService', () => {
 
     it('returns auth token if the PKCE grant flow is successful', () => {
       const authToken: AuthToken = authTokenFactory.build();
-      service.pkceAuthToken(faker.internet.email(), faker.random.uuid()).subscribe((response: AuthToken) => {
+      service.pkceAuthToken(faker.internet.email(), faker.datatype.uuid()).subscribe((response: AuthToken) => {
         // When observable resolves, result should match test data
         expect(response).toEqual(authToken);
       });
@@ -201,7 +201,7 @@ describe('AuthService', () => {
 
     it('stores the auth token in local storage on success', () => {
       const authToken: AuthToken = authTokenFactory.build();
-      service.pkceAuthToken(faker.internet.email(), faker.random.uuid()).subscribe((_response: AuthToken) => {
+      service.pkceAuthToken(faker.internet.email(), faker.datatype.uuid()).subscribe((_response: AuthToken) => {
         expect(localStorage.setItem).toHaveBeenCalledTimes(1);
         expect(localStorage.setItem).toHaveBeenCalledWith(service.AUTH_TOKEN_LOCAL_STORAGE_KEY, btoa(JSON.stringify(authToken)));
       });
@@ -216,7 +216,7 @@ describe('AuthService', () => {
     });
 
     it('forwards error response if call to /oauth/token is not successful', () => {
-      service.pkceAuthToken(faker.internet.email(), faker.random.uuid()).subscribe(
+      service.pkceAuthToken(faker.internet.email(), faker.datatype.uuid()).subscribe(
         (_response: AuthToken) => {
           fail('Unexpected success');
         },
@@ -235,7 +235,7 @@ describe('AuthService', () => {
     });
 
     it('does not write to localStorage if call to /oauth/token is not successful', () => {
-      service.pkceAuthToken(faker.internet.email(), faker.random.uuid()).subscribe(
+      service.pkceAuthToken(faker.internet.email(), faker.datatype.uuid()).subscribe(
         (_response: AuthToken) => {
           fail('Unexpected success');
         },
