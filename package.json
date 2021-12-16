@@ -45,7 +45,7 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^13.1.0",
-    "@angular-devkit/core": "^13.1.0",
+    "@angular-devkit/core": "^13.1.2",
     "@angular/cli": "^13.1.0",
     "@angular/compiler-cli": "^13.1.0",
     "@jest/types": "^27.4.2",
