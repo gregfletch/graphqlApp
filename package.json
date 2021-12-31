@@ -50,7 +50,7 @@
     "@angular/compiler-cli": "^13.1.1",
     "@jest/types": "^27.4.2",
     "@types/faker": "^5.5.9",
-    "@types/jest": "^27.0.3",
+    "@types/jest": "^27.4.0",
     "@types/node": "^16.11.15",
     "@typescript-eslint/eslint-plugin": "^5.8.0",
     "@typescript-eslint/parser": "^5.8.0",
